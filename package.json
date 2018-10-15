@@ -19,6 +19,7 @@
   "homepage": "https://github.com/TeamWebFit/WebFit-Server#readme",
   "dependencies": {
     "apollo-server": "^2.1.0",
+    "forever": "^0.15.3",
     "graphql": "^14.0.2"
   }
 }
