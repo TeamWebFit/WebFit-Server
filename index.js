@@ -28,12 +28,12 @@ app.post('/api/form', (req, res) => {
     `
 
     let transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
+      host: 'mail.rz.hs-furtwangen.de',
       port: 465,
       secure: true,
       auth: {
-        user: 'usslingk@gmail.com',
-        pass: 'BaluBarney'
+        user: 'weisenbu',
+        pass: 'IwiN8@BD'
       }
     })
 
