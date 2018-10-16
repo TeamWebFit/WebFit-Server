@@ -41,7 +41,7 @@ app.post('/api/form', (req, res) => {
         from: 'app@webfit.app', // sender address
         to: req.body.email, // list of receivers
         replyTo: 'app@webfit.app',
-        subject: 'Webfit Test Double-Opt', // Subject line
+        subject: 'Welcome to Webfit <3', // Subject line
         text: req.body.message, // plain text body
         html: htmlEmail // html body
     };
