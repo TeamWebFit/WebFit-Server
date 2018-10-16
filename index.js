@@ -38,9 +38,9 @@ app.post('/api/form', (req, res) => {
     })
 
     let mailOptions = {
-        from: 'usslingk@gmail.com', // sender address
+        from: 'app@webfit.app', // sender address
         to: req.body.email, // list of receivers
-        replyTo: 'usslingk@gmail.com',
+        replyTo: 'app@webfit.app',
         subject: 'Webfit Test Double-Opt', // Subject line
         text: req.body.message, // plain text body
         html: htmlEmail // html body
