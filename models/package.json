@@ -21,16 +21,13 @@
     "apollo-server": "^2.1.0",
     "body-parser": "^1.18.3",
     "concurrently": "^4.0.1",
-    "cors": "^2.8.4",
     "express": "^4.16.4",
     "express-graphql": "^0.6.12",
     "forever": "^0.15.3",
     "graphql": "^14.0.2",
-    "graphql-iso-date": "^3.6.1",
     "lodash": "^4.17.11",
     "mongoose": "^5.3.4",
     "nodemailer": "^4.6.8",
-    "nodemon": "^1.18.4",
-    "validator": "^10.8.0"
+    "nodemon": "^1.18.4"
   }
 }

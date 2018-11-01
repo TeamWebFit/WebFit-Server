@@ -1,9 +1,20 @@
+/*Allgemeines*/
 const { ApolloServer, gql } = require('apollo-server');
-const express = require('express')
-const bodyParser = require('body-parser')
-const nodemailer = require('nodemailer')
-const app = express()
-var token, link;
+const express = require('express');
+/*GraphQL*/
+const graphqlHTTP = require('express-graphql');
+const schema = require('./schema/schema');
+const cors = require('cors');
+/*MongoDB*/
+const mongoose = require('mongoose');
+/*E-Mails*/
+const bodyParser = require('body-parser');
+const nodemailer = require('nodemailer');
+const app = express();
+var token, link, email;
+
+/*Allow cross-origin requests*/
+app.use(cors());
 
 /*Double-Opt-In & Passwort vergessen*/
 app.use(express.static('public'))
@@ -16,7 +27,7 @@ app.post('/api/form', (req, res) => {
   nodemailer.createTestAccount((err, account) => {
     token= req.body.authToken;
     link="http://localhost:3000/verify"+"?token="+token;
-    console.log();
+    console.log("createTestAccount");
     const htmlEmail = `
       <h3>WebFit Registrierung</h3>
       <h4>Hurra! Du hast Dich bei WebFit registriert.</h4>
@@ -28,17 +39,17 @@ app.post('/api/form', (req, res) => {
     `
 
     let transporter = nodemailer.createTransport({
-      host: 'mail.rz.hs-furtwangen.de',
+      host: 'smtp.gmail.com',
       port: 465,
       secure: true,
       auth: {
-        user: 'weisenbu',
-        pass: 'IwiN8@BD'
+        user: 'usslingk@gmail.com',
+        pass: 'BaluBarney'
       }
     })
 
     let mailOptions = {
-        from: 'app@webfit.app', // sender address
+        from: 'WebFit <app@webfit.app>', // sender address
         to: req.body.email, // list of receivers
         replyTo: 'app@webfit.app',
         subject: 'Welcome to Webfit <3', // Subject line
@@ -59,7 +70,7 @@ app.post('/api/form', (req, res) => {
         // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
     });
   });
-})
+});
 
 const PORT = process.env.PORT || 3001
 
@@ -68,20 +79,74 @@ app.listen(PORT, () => {
 })
 /*End Double-Opt-In & PW vergessen*/
 
-// This is a (sample) collection of books we'll be able to query
-// the GraphQL server for.  A more complete example might fetch
-// from an existing data source like a REST API or database.
-const books = [
-  {
-    title: 'Harry Potter and the Chamber of Secrets',
-    author: 'J.K. Rowling',
-  },
-  {
-    title: 'Jurassic Park',
-    author: 'Michael Crichton',
-  },
-];
+/*Password reset*/
+app.post('/api/resetPassword', (req, res) => {
+  console.log(req.body);
+  nodemailer.createTestAccount((err, account) => {
+    email = req.body.email;
+    link="http://localhost:3000/newPassword"+"?email="+email;
+    console.log("createTestAccount");
+    const htmlEmail = `
+      <h3>Neues Passwort für WebFit!</h3>
+      <p>Setze Dein neues WebFit-Passwort, indem Du <a href="${link}">auf diesen Link klickst.</a></p>
+      <p>Diese Aktion wurde nicht von Dir ausgelöst? Dann kannst Du diese Email einfach ignorieren.</p>
+    `
 
+    let transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: 'usslingk@gmail.com',
+        pass: 'BaluBarney'
+      }
+    })
+
+    let mailOptions = {
+        from: 'WebFit <app@webfit.app>', // sender address
+        to: req.body.email, // list of receivers
+        replyTo: 'app@webfit.app',
+        subject: 'Neues Passwort für WebFit', // Subject line
+        html: htmlEmail // html body
+    };
+
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);
+        // Preview only available when sending through an Ethereal account
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+
+        // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+        // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+    });
+  });
+});
+
+/*Password reset*/
+
+/*GraphQL-Server*/
+app.use('/graphql',graphqlHTTP({
+  schema,
+  graphiql: true
+}));//is fired whenever a graphql request comes in
+
+app.listen(4000, () => {
+  console.log("GraphQL Server is listening on 4000");
+})
+/*End GraphQL Server*/
+
+/*MongoDB*/
+mongoose.connect('mongodb://webfit_user:!webfit4life!@ds137643.mlab.com:37643/webfit_db');
+mongoose.connection.once('open', () => {
+  console.log('connected to database');
+});
+/*End MongoDB*/
+
+
+/*
 // Type definitions define the "shape" of your data and specify
 // which ways the data can be fetched from the GraphQL server.
 const typeDefs = gql`
@@ -116,5 +181,5 @@ const server = new ApolloServer({ typeDefs, resolvers });
 // This `listen` method launches a web-server.  Existing apps
 // can utilize middleware options, which we'll discuss later.
 server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
-});
+  console.log(` Server ready at ${url}`);
+});*/
