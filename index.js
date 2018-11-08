@@ -4,6 +4,7 @@ const express = require('express');
 /*GraphQL*/
 const graphqlHTTP = require('express-graphql');
 const schema = require('./schema/schema');
+const {graphql} = require('graphql');
 const cors = require('cors');
 /*MongoDB*/
 const mongoose = require('mongoose');
@@ -171,6 +172,20 @@ app.get('/sync', (req, res) => {
   console.log("Neuer API-Sync-Request: " + date)
   console.log("Tracker: " + trackerid + " // " + "User: " + user)
     res.send("User: " + user + " // " + "Tracker: " + trackerid)
+    //hier graphql-request
+    function query (str) {
+      return graphql(schema, str);
+    }
+    query(`
+      {
+        tracker(id: "${trackerid}") {
+          id
+          token
+        }
+      }
+    `).then(data => {
+      console.log(data);
+    })
 
   }
 })

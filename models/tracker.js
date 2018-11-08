@@ -3,9 +3,10 @@ const Schema = mongoose.Schema;
 
 const trackerSchema = new Schema ({
   createdAt: Date,
-  trackerTypeId: String,
+  trackerModelID: String,
   userId: String,
-  token: String
+  token: String,
+  lastSync: Date
 });
 
 module.exports = mongoose.model('Tracker', trackerSchema);
