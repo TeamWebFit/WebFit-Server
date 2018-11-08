@@ -19,7 +19,8 @@ const userSchema = new Schema ({
   trackerId: String,
   weightId: String,
   email: String,
-  password: String
-})
+  password: String,
+  loggedIn: Boolean
+});
 
 module.exports = mongoose.model('User', userSchema);
