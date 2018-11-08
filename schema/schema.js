@@ -55,7 +55,8 @@ const UserType = new GraphQLObjectType({
         }//grabbing data
       },*/
       email: {type: GraphQLString }, //@isUnique
-      password: {type: GraphQLString }
+      password: {type: GraphQLString },
+      loggedIn: {type: GraphQLBoolean }
   })
 })
 
@@ -181,7 +182,8 @@ const Mutation = new GraphQLObjectType({
           //trackerId: args.trackerId,
           //weightId: args.weightId,
           email: args.email,
-          password: args.password
+          password: args.password,
+          loggedIn: false
         });
         return user.save();
       }
@@ -217,11 +219,23 @@ const Mutation = new GraphQLObjectType({
       type: UserType,
       args: {
         authToken: {type: new GraphQLNonNull(GraphQLString) },
-        updatedAt: {type: DateTimeScalar },
-        lastLogin: {type: DateTimeScalar },
       },
       resolve(parent, args){
-      return User.update({ authToken: args.authToken }, { active: true, updatedAt: args.updatedAt, lastLogin: args.lastLogin });
+      return User.update({ authToken: args.authToken }, { active: true, loggedIn: true });
+      }
+    },
+    signinUser: {
+      type: UserType,
+      args: {
+        email: {type: new GraphQLNonNull(GraphQLString) },
+        password: {type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve(parent, args){
+        return User.findOne({
+          email: args.email,
+          password: args.password
+         });
+
       }
     }
   }
