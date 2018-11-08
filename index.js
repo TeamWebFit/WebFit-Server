@@ -145,41 +145,38 @@ mongoose.connection.once('open', () => {
 });
 /*End MongoDB*/
 
+/*  WebFit-API */
+/*  This API listen for TrackerID&TrackerTyp&UserID
+    to make an HTTP-Request to a wearhouse */
 
-/*
-// Type definitions define the "shape" of your data and specify
-// which ways the data can be fetched from the GraphQL server.
-const typeDefs = gql`
-  # Comments in GraphQL are defined with the hash (#) symbol.
+app.listen(80, () => {
+  console.log("WebFit-API-Server is running on 80")
 
-  # This "Book" type can be used in other type declarations.
-  type Book {
-    title: String
-    author: String
+})
+
+app.get('/', (req, res) => {
+  res.send('WebFit-Server is online')
+})
+
+app.get('/sync', (req, res) => {
+  trackerid = req.query.trackerid;
+  user = req.query.user;
+
+  if ( trackerid == undefined || user == undefined ){
+    res.send("Ungültiger Request")
+  }else{
+  var newDate = new Date();
+  var date = newDate.getDay() + "." + newDate.getMonth() + "." + newDate.getFullYear() + " / " + newDate.getHours() + ":"+ newDate.getMinutes() + ":"+ newDate.getSeconds()
+  console.log("=============")
+  console.log("Neuer API-Sync-Request: " + date)
+  console.log("Tracker: " + trackerid + " // " + "User: " + user)
+    res.send("User: " + user + " // " + "Tracker: " + trackerid)
+
   }
+})
 
-  # The "Query" type is the root of all GraphQL queries.
-  # (A "Mutation" type will be covered later on.)
-  type Query {
-    books: [Book]
-  }
-`;
+/* app.get('/sync', (req, res) => {
+  res.send('You arent allowed!')
+})
 
-// Resolvers define the technique for fetching the types in the
-// schema.  We'll retrieve books from the "books" array above.
-const resolvers = {
-  Query: {
-    books: () => books,
-  },
-};
-
-// In the most basic sense, the ApolloServer can be started
-// by passing type definitions (typeDefs) and the resolvers
-// responsible for fetching the data for those types.
-const server = new ApolloServer({ typeDefs, resolvers });
-
-// This `listen` method launches a web-server.  Existing apps
-// can utilize middleware options, which we'll discuss later.
-server.listen().then(({ url }) => {
-  console.log(` Server ready at ${url}`);
-});*/
+*/
