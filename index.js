@@ -196,11 +196,16 @@ app.get('/sync', (req, res) => {
               }
             }
             `).then(data => {
+              if (tracker == null){
+                res.send("Error #04 - Not found")
+              }else{
                 //Tracker-Daten kommen an
                 // Nun abgleich mit API-Request Daten
+                var tracker = data['data'].tracker.id
                 var dbuser = data['data'].tracker.userId.id
                 var token = data['data'].tracker.token
                 var lastSync = data['data'].tracker.lastSync
+                
                 if (dbuser === user){
                   res.send("API-REQUEST ist korrekt")
 
@@ -221,8 +226,10 @@ app.get('/sync', (req, res) => {
                 }else{
                   res.send("Error #02 - Not allowed")
                 }
+              }
               })
             }
+          
           })
 
 /* app.get('/sync', (req, res) => {
