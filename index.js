@@ -160,35 +160,70 @@ app.get('/', (req, res) => {
 })
 
 app.get('/sync', (req, res) => {
+  
+  //Globale Variablen
   trackerid = req.query.trackerid;
   user = req.query.user;
 
+  // Prüfung ob alle Daten beim Request korrekt angegeben wurden
   if ( trackerid == undefined || user == undefined ){
-    res.send("Ungültiger Request")
+    res.send("Error #01 - Request invalid")
   }else{
-  var newDate = new Date();
-  var date = newDate.getDay() + "." + newDate.getMonth() + "." + newDate.getFullYear() + " / " + newDate.getHours() + ":"+ newDate.getMinutes() + ":"+ newDate.getSeconds()
-  console.log("=============")
-  console.log("Neuer API-Sync-Request: " + date)
-  console.log("Tracker: " + trackerid + " // " + "User: " + user)
-    res.send("User: " + user + " // " + "Tracker: " + trackerid)
-    //hier graphql-request
-    function query (str) {
-      return graphql(schema, str);
-    }
-    query(`
-      {
-        tracker(id: "${trackerid}") {
-          id
-          token
-        }
-      }
-    `).then(data => {
-      console.log(data);
-    })
+      // Loggin eines neuen Request  
+          var newDate = new Date();
+          var date = newDate.getDay() + "." + newDate.getMonth() + "." + newDate.getFullYear() + " / " + newDate.getHours() + ":"+ newDate.getMinutes() + ":"+ newDate.getSeconds()
+          console.log("=============")
+          console.log("Neuer API-Sync-Request: " + date)
+          console.log("Tracker: " + trackerid + " // " + "User: " + user)
+      
+      // Abfrage der userID durch den Tracker von der Datenbank
+      // Anschließend überprüfung ob erhaltene Daten mit angegeneben Daten übereinstimmen
+          function query (str) {
+            return graphql(schema, str);
+          }
+            query(`
+            {
+              tracker(id: "${trackerid}") {
+                id,
+                token,
+                trackerModelID{
+                  id
+                },
+                userId{
+                  id
+                },
+                lastSync
+              }
+            }
+            `).then(data => {
+                //Tracker-Daten kommen an
+                // Nun abgleich mit API-Request Daten
+                var dbuser = data['data'].tracker.userId.id
+                var token = data['data'].tracker.token
+                var lastSync = data['data'].tracker.lastSync
+                if (dbuser === user){
+                  res.send("API-REQUEST ist korrekt")
 
-  }
-})
+                    // Abgleich der TTL
+                    var currentdate = newDate()
+                    var time_diff = currentdate - lastSync
+                    var sync = Math.abs(time_diff)
+
+                    if (sync > 300000){
+                      // Sync ist erlaubt
+                      // hier folgt der Warehouse Request
+                    }else{
+                      res.send("Error #03 - Timeout")
+                    }
+
+
+
+                }else{
+                  res.send("Error #02 - Not allowed")
+                }
+              })
+            }
+          })
 
 /* app.get('/sync', (req, res) => {
   res.send('You arent allowed!')
