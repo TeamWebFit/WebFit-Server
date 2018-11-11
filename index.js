@@ -196,7 +196,8 @@ app.get('/sync', (req, res) => {
               }
             }
             `).then(data => {
-              if (tracker == null){
+              console.log(data)
+              if (data['data'].tracker == null){
                 res.send("Error #04 - Not found")
               }else{
                 //Tracker-Daten kommen an
