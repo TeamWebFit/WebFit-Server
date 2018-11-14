@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const trackerModelSchema = new Schema ({
-  createdAt: Date,
+  createdAt: String,
   manufacturer: String,
   type: String,
   apiLink: String,
