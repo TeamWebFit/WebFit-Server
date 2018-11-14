@@ -1,4 +1,5 @@
 const graphql = require('graphql');
+const graphqlisodate = require('graphql-iso-date');
 const _ = require('lodash');
 const User = require('../models/user');
 const Tracker = require('../models/tracker');
@@ -19,6 +20,12 @@ const {
   GraphQLNonNull,
   GraphQLScalarType
 } = graphql;
+
+const {
+  GraphQLDate,
+  GraphQLTime,
+  GraphQLDateTime
+} = 'graphqlisodate';
 
 var date = new Date();
 
@@ -47,14 +54,21 @@ const UserType = new GraphQLObjectType({
           //return _.filter(weights, {userId: parent.id})
           return Weight.find({ userId: parent.id });
         }
-      },*/
-      trackersIds: {
+      },
+      trackers: {
         type: new GraphQLList(TrackerType),
         resolve(parent, args){
         //  return _.filter(trackers, {userId: parent.id})
         return Tracker.find({ userId: parent.id });
         }//grabbing data
-      },
+      },*/
+      tracker: {
+        type: new GraphQLList(TrackerType),
+        resolve(parent, args){
+        //  return _.filter(trackers, {userId: parent.id})
+        console.log(parent.id);
+        return Tracker.find({ userId: parent.id });
+      }},
       email: {type: GraphQLString }, //@isUnique
       password: {type: GraphQLString },
       loggedIn: {type: GraphQLBoolean }
@@ -66,9 +80,10 @@ const TrackerModelType = new GraphQLObjectType({
   fields: () => ({
       //createdAt: DateTime!
       id: {type: GraphQLID },
-      name: {type: GraphQLString },
-      trackerModel: {type: GraphQLString },
-      trackerIds: {
+      manufacturer: {type: GraphQLString },
+      type: {type: GraphQLString },
+      apiLink: {type: GraphQLString },
+      trackers: {
         type: new GraphQLList(TrackerType),
         resolve(parent, args){
         //  return _.filter(users, {trackerId: parent.id})
@@ -85,19 +100,23 @@ const TrackerType = new GraphQLObjectType({
       //createdAt: DateTime!
       id: {type: GraphQLID },
       createdAt: {type: DateTimeScalar },
-      trackerModelID: {
-        type: new GraphQLList(TrackerModelType),
+      trackerModel: {
+        type: TrackerModelType,
         resolve(parent, args){
         //  return _.filter(trackers, {userId: parent.id})
-        return TrackerModel.find({ trackersIds: parent.id });
+        return TrackerModel.findOne({ trackerIds: parent.id });
       }},
-      userId: {
-        type: new GraphQLList(UserType),
+      user: {
+        type: UserType,
         resolve(parent, args){
         //  return _.filter(trackers, {userId: parent.id})
-        return User.find({ trackersIds: parent.id });
+        return User.findOne({ trackerIds: parent.id });
       }},
-      token: {type: GraphQLString },
+      access_token: {type: GraphQLString },
+      token_type: {type: GraphQLString },
+      expires_in: {type: GraphQLInt },
+      refreshtoken: {type: GraphQLString },
+      user_id: {type: GraphQLString },
       lastSync: {type: DateTimeScalar }
   })
 })
@@ -108,6 +127,7 @@ const WeightType = new GraphQLObjectType({
       //createdAt: DateTime!
       id: {type: GraphQLID },
       kilogram: {type: GraphQLFloat },
+
       users: {
         type: new GraphQLList(UserType),
         resolve(parent, args){
@@ -131,6 +151,14 @@ const RootQuery = new GraphQLObjectType({
       return User.findById(args.id);
       }
     },
+    trackerModel: {
+      type: TrackerModelType,
+      args: { id: {type: GraphQLID }},
+      resolve(parent, args){
+      // return _.find(users, {id: args.id });
+      return TrackerModel.findById(args.id);
+      }
+    },
     tracker: {
       type: TrackerType,
       args: { id: {type: GraphQLID }},
@@ -141,10 +169,10 @@ const RootQuery = new GraphQLObjectType({
     },
     userPerMail: {
       type: UserType,
-      args: { email: {type: GraphQLString }},
+      args: { createdAt: {type: DateTimeScalar }},
       resolve(parent, args){
       // return _.find(users, {id: args.id });
-      return User.findOne({ email: args.email });
+      return User.findOne({ createdAt: args.createdAt });
       }
     },
     allUsers: {
@@ -160,7 +188,7 @@ const RootQuery = new GraphQLObjectType({
       //  return trackers
       return Tracker.find({});
       }
-    }
+    },
   }
 })
 
@@ -182,7 +210,7 @@ const Mutation = new GraphQLObjectType({
         country: {type: GraphQLString },
         zipcode: {type: GraphQLInt },
         height: {type: GraphQLFloat },
-        trackerId: {type: GraphQLID },
+        trackerIds: {type: GraphQLID },
         weightId: {type: GraphQLID },
         email: {type: new GraphQLNonNull(GraphQLString) },
         password: {type: new GraphQLNonNull(GraphQLString) },
@@ -199,11 +227,11 @@ const Mutation = new GraphQLObjectType({
           gender: args.gender,
           active: false,// @defaultValue(value: false)
           userGroup: 1,
-          //language: args.language,
+          language: args.language,
           //country: args.country,
           //zipcode: args.zipcode,
           //height: args.height,
-          //trackerId: args.trackerId,
+          trackerIds: args.trackerIds,
           //weightId: args.weightId,
           email: args.email,
           password: args.password,
@@ -218,14 +246,14 @@ const Mutation = new GraphQLObjectType({
         manufacturer: {type: GraphQLString },
         type: {type: GraphQLString },
         apiLink: {type: GraphQLString },
-        trackersIds: {type: GraphQLString }
+        trackerIds: {type: GraphQLString }
       },
       resolve(parent, args){
         let trackerModel = new TrackerModel({
           manufacturer: args.manufacturer,
           type: args.type,
           apiLink: args.apiLink,
-          trackersIds: args.trackersIds
+          trackerIds: args.trackerIds
         });
         return trackerModel.save();
       }
@@ -235,13 +263,23 @@ const Mutation = new GraphQLObjectType({
       args: {
         trackerModelID: {type: GraphQLID },
         userId: {type: GraphQLID },
-        token: {type: GraphQLString },
+        access_token: {type: GraphQLString },
+        token_type: {type: GraphQLString },
+        expires_in: {type: GraphQLInt },
+        refreshtoken: {type: GraphQLString },
+        user_id: {type: GraphQLString },
       },
       resolve(parent, args){
         let tracker = new Tracker({
+          createdAt: date,
           trackerModelID: args.trackerModelID,
           userId: args.userId,
-          token: args.token
+          access_token: args.access_token,
+          token_type: args.token_type,
+          expires_in: args.expires_in,
+          refreshtoken: args.refreshtoken,
+          user_id: args.user_id,
+          lastSync: date
         });
         return tracker.save();
       }

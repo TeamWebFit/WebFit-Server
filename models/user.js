@@ -16,7 +16,7 @@ const userSchema = new Schema ({
   country: String,
   zipcode: Number,
   height: Number,
-  trackersIds: String,
+  trackerIds: [String],
   weightId: String,
   email: String,
   password: String,

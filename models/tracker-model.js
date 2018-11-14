@@ -6,7 +6,7 @@ const trackerModelSchema = new Schema ({
   manufacturer: String,
   type: String,
   apiLink: String,
-  trackerIds: String,
+  trackerIds: [String],
 });
 
 module.exports = mongoose.model('TrackerModel', trackerModelSchema);
