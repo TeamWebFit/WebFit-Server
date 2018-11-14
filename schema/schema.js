@@ -28,19 +28,20 @@ const {
 } = 'graphqlisodate';
 
 var date = new Date();
+var dateString = date.toString();
 
 /*Types*/
 const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
-      createdAt: {type: DateTimeScalar },
-      updatedAt: {type: DateTimeScalar },
-      lastLogin: {type: DateTimeScalar },
+      createdAt: {type: GraphQLString },
+      updatedAt: {type: GraphQLString },
+      lastLogin: {type: GraphQLString },
       id: {type: GraphQLID },
       firstName: {type: GraphQLString },
       name: {type: GraphQLString },
       authToken: {type: GraphQLString },
-      dateOfBirth: {type: DateTimeScalar },
+      dateOfBirth: {type: GraphQLString },
       gender: {type: GraphQLInt },
       active: {type: GraphQLBoolean },// @defaultValue(value: false)
       userGroup: {type: GraphQLInt },
@@ -78,7 +79,7 @@ const UserType = new GraphQLObjectType({
 const TrackerModelType = new GraphQLObjectType({
   name: 'TrackerModel',
   fields: () => ({
-      //createdAt: DateTime!
+      createdAt: {type: GraphQLString},
       id: {type: GraphQLID },
       manufacturer: {type: GraphQLString },
       type: {type: GraphQLString },
@@ -99,7 +100,7 @@ const TrackerType = new GraphQLObjectType({
   fields: () => ({
       //createdAt: DateTime!
       id: {type: GraphQLID },
-      createdAt: {type: DateTimeScalar },
+      createdAt: {type: GraphQLString },
       trackerModel: {
         type: TrackerModelType,
         resolve(parent, args){
@@ -117,14 +118,14 @@ const TrackerType = new GraphQLObjectType({
       expires_in: {type: GraphQLInt },
       refreshtoken: {type: GraphQLString },
       user_id: {type: GraphQLString },
-      lastSync: {type: DateTimeScalar }
+      lastSync: {type: GraphQLString }
   })
 })
 
 const WeightType = new GraphQLObjectType({
   name: 'Weight',
   fields: () => ({
-      //createdAt: DateTime!
+      createdAt: {type: GraphQLString},
       id: {type: GraphQLID },
       kilogram: {type: GraphQLFloat },
 
@@ -169,10 +170,10 @@ const RootQuery = new GraphQLObjectType({
     },
     userPerMail: {
       type: UserType,
-      args: { createdAt: {type: DateTimeScalar }},
+      args: { email: {type: GraphQLString }},
       resolve(parent, args){
       // return _.find(users, {id: args.id });
-      return User.findOne({ createdAt: args.createdAt });
+      return User.findOne({ email: args.email });
       }
     },
     allUsers: {
@@ -204,7 +205,7 @@ const Mutation = new GraphQLObjectType({
         firstName: {type: new GraphQLNonNull(GraphQLString) },
         name: {type: new GraphQLNonNull(GraphQLString) },
         authToken: {type: new GraphQLNonNull(GraphQLString) },
-        dateOfBirth: {type: DateTimeScalar },
+        dateOfBirth: {type: GraphQLString },
         gender: {type: GraphQLInt },
         language: {type: GraphQLString },
         country: {type: GraphQLString },
@@ -217,9 +218,9 @@ const Mutation = new GraphQLObjectType({
       },
       resolve(parent, args){
         let user = new User({
-          createdAt: date,
-          updatedAt: date,
-          lastLogin: date,
+          createdAt: dateString,
+          updatedAt: dateString,
+          lastLogin: dateString,
           name: args.name,
           firstName: args.firstName,
           authToken: args.authToken,
@@ -271,7 +272,7 @@ const Mutation = new GraphQLObjectType({
       },
       resolve(parent, args){
         let tracker = new Tracker({
-          createdAt: date,
+          createdAt: dateString,
           trackerModelID: args.trackerModelID,
           userId: args.userId,
           access_token: args.access_token,
@@ -279,7 +280,7 @@ const Mutation = new GraphQLObjectType({
           expires_in: args.expires_in,
           refreshtoken: args.refreshtoken,
           user_id: args.user_id,
-          lastSync: date
+          lastSync: dateString
         });
         return tracker.save();
       }
@@ -289,7 +290,7 @@ const Mutation = new GraphQLObjectType({
       args: {
         email: {type: new GraphQLNonNull(GraphQLString) },
         password: {type: new GraphQLNonNull(GraphQLString) },
-        updatedAt: {type: DateTimeScalar },
+        updatedAt: {type: GraphQLString },
       },
       resolve(parent, args){
       return User.update({ email: args.email }, { password: args.password, updatedAt: args.updatedAt });
