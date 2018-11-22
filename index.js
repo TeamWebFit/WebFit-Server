@@ -143,7 +143,7 @@ app.listen(4000, () => {
 /*End GraphQL Server*/
 
 /*MongoDB*/
-mongoose.connect('mongodb://webfit_user:!webfit4life!@ds137643.mlab.com:37643/webfit_db');
+mongoose.connect('mongodb://webfitapp:webfit4life@projekt-webfit.de:27017/WebFitDB');
 mongoose.connection.once('open', () => {
   console.log('connected to database');
 });
@@ -154,7 +154,7 @@ mongoose.connection.once('open', () => {
     to make an HTTP-Request to a wearhouse */
 
 app.listen(4009, () => {
-  console.log("WebFit-API-Server is running on 80")
+  console.log("WebFit-API-Server is running on 4009")
 
 })
 
@@ -163,7 +163,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/sync', (req, res) => {
-  
+
   //Globale Variablen
   trackerid = req.query.trackerid;
   user = req.query.user;
@@ -172,13 +172,13 @@ app.get('/sync', (req, res) => {
   if ( trackerid == undefined || user == undefined ){
     res.send("Error #01 - Request invalid")
   }else{
-      // Loggin eines neuen Request  
+      // Loggin eines neuen Request
           var newDate = new Date();
           var date = newDate.getDay() + "." + newDate.getMonth() + "." + newDate.getFullYear() + " / " + newDate.getHours() + ":"+ newDate.getMinutes() + ":"+ newDate.getSeconds()
           console.log("=============")
           console.log("Neuer API-Sync-Request: " + date)
           console.log("Tracker: " + trackerid + " // " + "User: " + user)
-      
+
       // Abfrage der userID durch den Tracker von der Datenbank
       // Anschließend überprüfung ob erhaltene Daten mit angegeneben Daten übereinstimmen
           function query (str) {
@@ -229,21 +229,21 @@ app.get('/sync', (req, res) => {
                     var sync = Math.abs(time_diff)
 
                     if (sync > 300000){
-                      
+
                       // Sync ist erlaubt
                       // hier folgt der Warehouse Request
-                      
+
                       var api_request_link = apiLink+apiLinkRequest
 
                       axios.get(
-                        
+
                         api_request_link,
                         {
                           headers: {
                             "Authorization": token_type + " " +token
                           }
                         }
-                        
+
                         )
                         .then(function(response){
                           console.log(response.data);
@@ -271,7 +271,7 @@ app.get('/sync', (req, res) => {
                           res.send("Error #05 - Warehouse-API returned an error <br />" + error)
                         })
 
-                     
+
                     }else{
                       res.send("Error #03 - Timeout")
                     }
@@ -284,7 +284,7 @@ app.get('/sync', (req, res) => {
               }
               })
             }
-          
+
           })
 
 /* app.get('/sync', (req, res) => {
