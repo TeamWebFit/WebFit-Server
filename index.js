@@ -14,6 +14,9 @@ const nodemailer = require('nodemailer');
 const app = express();
 var token, link, email;
 
+/*Axios*/
+const axios = require('axios');
+
 /*Allow cross-origin requests*/
 app.use(cors());
 
@@ -150,7 +153,7 @@ mongoose.connection.once('open', () => {
 /*  This API listen for TrackerID&TrackerTyp&UserID
     to make an HTTP-Request to a wearhouse */
 
-app.listen(80, () => {
+app.listen(4009, () => {
   console.log("WebFit-API-Server is running on 80")
 
 })
@@ -160,35 +163,129 @@ app.get('/', (req, res) => {
 })
 
 app.get('/sync', (req, res) => {
+  
+  //Globale Variablen
   trackerid = req.query.trackerid;
   user = req.query.user;
 
+  // Prüfung ob alle Daten beim Request korrekt angegeben wurden
   if ( trackerid == undefined || user == undefined ){
-    res.send("Ungültiger Request")
+    res.send("Error #01 - Request invalid")
   }else{
-  var newDate = new Date();
-  var date = newDate.getDay() + "." + newDate.getMonth() + "." + newDate.getFullYear() + " / " + newDate.getHours() + ":"+ newDate.getMinutes() + ":"+ newDate.getSeconds()
-  console.log("=============")
-  console.log("Neuer API-Sync-Request: " + date)
-  console.log("Tracker: " + trackerid + " // " + "User: " + user)
-    res.send("User: " + user + " // " + "Tracker: " + trackerid)
-    //hier graphql-request
-    function query (str) {
-      return graphql(schema, str);
-    }
-    query(`
-      {
-        tracker(id: "${trackerid}") {
-          id
-          token
-        }
-      }
-    `).then(data => {
-      console.log(data);
-    })
+      // Loggin eines neuen Request  
+          var newDate = new Date();
+          var date = newDate.getDay() + "." + newDate.getMonth() + "." + newDate.getFullYear() + " / " + newDate.getHours() + ":"+ newDate.getMinutes() + ":"+ newDate.getSeconds()
+          console.log("=============")
+          console.log("Neuer API-Sync-Request: " + date)
+          console.log("Tracker: " + trackerid + " // " + "User: " + user)
+      
+      // Abfrage der userID durch den Tracker von der Datenbank
+      // Anschließend überprüfung ob erhaltene Daten mit angegeneben Daten übereinstimmen
+          function query (str) {
+            return graphql(schema, str);
+          }
+            query(`
+            {
+              tracker(id: "${trackerid}") {
+                id,
+                access_token,
+                token_type,
+                trackerModel{
+                  id,
+                  apiLink,
+                  apiLinkRequest
+                },
+                user{
+                  id
+                },
+                lastSync,
+                user_id
+              }
+            }
+            `).then(data => {
+              console.log(data)
+              if (data['data'].tracker == null){
+                res.send("Error #04 - Not found")
+              }else{
+                //Tracker-Daten kommen an
+                // Nun abgleich mit API-Request Daten
+                var tracker = data['data'].tracker.id // WebFit TrackerID
+                var wearhouse_userid = data['data'].tracker.user_id // FITBIT API
+                var dbuser = data['data'].tracker.user.id // WebFit UserID
+                var token = data['data'].tracker.access_token // Bearer Token
+                var token_type = data['data'].tracker.token_type // Bearer Token
+                var sync_date = data['data'].tracker.lastSync // time in ms
+                var apiLink = data['data'].tracker.trackerModel.apiLink // e.g. api.fitbit.com
+                var apiLinkRequest = data['data'].tracker.trackerModel.apiLinkRequest // e.g. api.fitbit.com
+                var lastSync = "1342289846954" // DEMO for time in ms
+                if (dbuser === user){
 
-  }
-})
+                    // Abgleich der TTL
+                    var currentdate = new Date().getTime()
+                    console.log("-------------")
+                    console.log(currentdate)
+                    console.log("-------------")
+                    var time_diff = currentdate - lastSync
+                    var sync = Math.abs(time_diff)
+
+                    if (sync > 300000){
+                      
+                      // Sync ist erlaubt
+                      // hier folgt der Warehouse Request
+                      
+                      var api_request_link = apiLink+apiLinkRequest
+
+                      axios.get(
+                        
+                        api_request_link,
+                        {
+                          headers: {
+                            "Authorization": token_type + " " +token
+                          }
+                        }
+                        
+                        )
+                        .then(function(response){
+                          console.log(response.data);
+                          // Nun die Daten in die Datenbank schreiben
+                          var array_steps = response.data["activities-steps"];
+                         // var array_steps_length = array_steps.length;
+                         array_steps.forEach(element => {
+                           query(`
+                           mutation{
+                            createSteps(
+                             time: "${element.dateTime}",
+                             value: "${element.value}",
+                             trackerId: "${tracker}"
+                           ){
+                             time
+                           }
+                          }
+                           `).then(done => {
+                            console.log(done)
+                           })
+                         })
+                         res.send("Success")
+                        })
+                        .catch(function (error) {
+                          res.send("Error #05 - Warehouse-API returned an error <br />" + error)
+                        })
+
+                     
+                    }else{
+                      res.send("Error #03 - Timeout")
+                    }
+
+
+
+                }else{
+                  res.send("Error #02 - Not allowed")
+                }
+              }
+              })
+            }
+          
+          })
 
 /* app.get('/sync', (req, res) => {
   res.send('You arent allowed!')
