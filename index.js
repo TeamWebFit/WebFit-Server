@@ -14,6 +14,9 @@ const nodemailer = require('nodemailer');
 const app = express();
 var token, link, email;
 
+/*Axios*/
+const axios = require('axios');
+
 /*Allow cross-origin requests*/
 app.use(cors());
 
@@ -185,14 +188,18 @@ app.get('/sync', (req, res) => {
             {
               tracker(id: "${trackerid}") {
                 id,
-                token,
-                trackerModelID{
+                access_token,
+                token_type,
+                trackerModel{
+                  id,
+                  apiLink,
+                  apiLinkRequest
+                },
+                user{
                   id
                 },
-                userId{
-                  id
-                },
-                lastSync
+                lastSync,
+                user_id
               }
             }
             `).then(data => {
@@ -202,22 +209,69 @@ app.get('/sync', (req, res) => {
               }else{
                 //Tracker-Daten kommen an
                 // Nun abgleich mit API-Request Daten
-                var tracker = data['data'].tracker.id
-                var dbuser = data['data'].tracker.userId.id
-                var token = data['data'].tracker.token
-                var lastSync = data['data'].tracker.lastSync
-                
+                var tracker = data['data'].tracker.id // WebFit TrackerID
+                var wearhouse_userid = data['data'].tracker.user_id // FITBIT API
+                var dbuser = data['data'].tracker.user.id // WebFit UserID
+                var token = data['data'].tracker.access_token // Bearer Token
+                var token_type = data['data'].tracker.token_type // Bearer Token
+                var sync_date = data['data'].tracker.lastSync // time in ms
+                var apiLink = data['data'].tracker.trackerModel.apiLink // e.g. api.fitbit.com
+                var apiLinkRequest = data['data'].tracker.trackerModel.apiLinkRequest // e.g. api.fitbit.com
+                var lastSync = "1342289846954" // DEMO for time in ms
                 if (dbuser === user){
-                  res.send("API-REQUEST ist korrekt")
 
                     // Abgleich der TTL
-                    var currentdate = newDate()
+                    var currentdate = new Date().getTime()
+                    console.log("-------------")
+                    console.log(currentdate)
+                    console.log("-------------")
                     var time_diff = currentdate - lastSync
                     var sync = Math.abs(time_diff)
 
                     if (sync > 300000){
+                      
                       // Sync ist erlaubt
                       // hier folgt der Warehouse Request
+                      
+                      var api_request_link = apiLink+apiLinkRequest
+
+                      axios.get(
+                        
+                        api_request_link,
+                        {
+                          headers: {
+                            "Authorization": token_type + " " +token
+                          }
+                        }
+                        
+                        )
+                        .then(function(response){
+                          console.log(response.data);
+                          // Nun die Daten in die Datenbank schreiben
+                          var array_steps = response.data["activities-steps"];
+                         // var array_steps_length = array_steps.length;
+                         array_steps.forEach(element => {
+                           query(`
+                           mutation{
+                            createSteps(
+                             time: "${element.dateTime}",
+                             value: "${element.value}",
+                             trackerId: "${tracker}"
+                           ){
+                             time
+                           }
+                          }
+                           `).then(done => {
+                            console.log(done)
+                           })
+                         })
+                         res.send("Success")
+                        })
+                        .catch(function (error) {
+                          res.send("Error #05 - Warehouse-API returned an error <br />" + error)
+                        })
+
+                     
                     }else{
                       res.send("Error #03 - Timeout")
                     }
