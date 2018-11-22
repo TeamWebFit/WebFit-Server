@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const stepsSchema = new Schema ({
   trackerId: String,
   time: String,
-  value: String
+  value: Number
 });
 
 module.exports = mongoose.model('Steps', stepsSchema);
