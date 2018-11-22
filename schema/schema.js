@@ -147,7 +147,7 @@ const StepsType = new GraphQLObjectType({
   name: 'Steps',
   fields: () => ({
       time: {type: GraphQLString},
-      value: {type: GraphQLInt },
+      value: {type: GraphQLString },
       trackers: {
         type: new GraphQLList(TrackerType),
         resolve(parent, args){
@@ -311,7 +311,7 @@ const Mutation = new GraphQLObjectType({
       args: {
         trackerId: {type: GraphQLID },
         time: {type: GraphQLString },
-        value: {type: GraphQLInt }
+        value: {type: GraphQLString }
       },
       resolve(parent, args){
         let steps = new Steps({
