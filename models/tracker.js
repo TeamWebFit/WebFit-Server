@@ -10,7 +10,8 @@ const trackerSchema = new Schema ({
   expires_in: Number,
   refreshtoken: String, //Google Fit
   user_id: String, //Fitbit User
-  lastSync: String
+  lastSync: String,
+  stepsId: String
 });
 
 module.exports = mongoose.model('Tracker', trackerSchema);

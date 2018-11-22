@@ -2,9 +2,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const stepsSchema = new Schema ({
-  userId: String,
   trackerId: String,
-  time: Date,
+  time: String,
   value: Number
 });
 

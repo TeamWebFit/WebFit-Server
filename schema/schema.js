@@ -5,6 +5,7 @@ const User = require('../models/user');
 const Tracker = require('../models/tracker');
 const Weight = require('../models/weight');
 const TrackerModel = require('../models/tracker-model');
+const Steps = require('../models/steps');
 
 const DateTimeScalar = require('../scalars/dateTimeScalar');
 
@@ -29,6 +30,7 @@ const {
 
 var date = new Date();
 var dateString = date.toString();
+var milliSec = date.getTime();
 
 /*Types*/
 const UserType = new GraphQLObjectType({
@@ -84,6 +86,7 @@ const TrackerModelType = new GraphQLObjectType({
       manufacturer: {type: GraphQLString },
       type: {type: GraphQLString },
       apiLink: {type: GraphQLString },
+      apiLinkRequest: {type: GraphQLString },
       trackers: {
         type: new GraphQLList(TrackerType),
         resolve(parent, args){
@@ -134,6 +137,22 @@ const WeightType = new GraphQLObjectType({
         resolve(parent, args){
         //  return _.filter(users, {weightId: parent.id})
         return User.find({ weightId: parent.id });
+        }//grabbing data
+      },
+      //updatedAt: DateTime!
+  })
+})
+
+const StepsType = new GraphQLObjectType({
+  name: 'Steps',
+  fields: () => ({
+      time: {type: GraphQLString},
+      value: {type: GraphQLInt },
+      trackers: {
+        type: new GraphQLList(TrackerType),
+        resolve(parent, args){
+        //  return _.filter(users, {weightId: parent.id})
+        return User.find({ stepsId: parent.id });
         }//grabbing data
       },
       //updatedAt: DateTime!
@@ -247,6 +266,7 @@ const Mutation = new GraphQLObjectType({
         manufacturer: {type: GraphQLString },
         type: {type: GraphQLString },
         apiLink: {type: GraphQLString },
+        apiLinkRequest: {type: GraphQLString },
         trackerIds: {type: GraphQLString }
       },
       resolve(parent, args){
@@ -254,6 +274,7 @@ const Mutation = new GraphQLObjectType({
           manufacturer: args.manufacturer,
           type: args.type,
           apiLink: args.apiLink,
+          apiLinkRequest: args.apiLinkRequest,
           trackerIds: args.trackerIds
         });
         return trackerModel.save();
@@ -280,11 +301,28 @@ const Mutation = new GraphQLObjectType({
           expires_in: args.expires_in,
           refreshtoken: args.refreshtoken,
           user_id: args.user_id,
-          lastSync: dateString
+          lastSync: milliSec
         });
         return tracker.save();
       }
     },
+    createSteps: {
+      type: StepsType,
+      args: {
+        trackerId: {type: GraphQLID },
+        time: {type: GraphQLString },
+        value: {type: GraphQLInt }
+      },
+      resolve(parent, args){
+        let steps = new Steps({
+          trackerId: args.trackerId,
+          time: args.time,
+          value: args.value,
+        });
+        return steps.save();
+      }
+    },
+    //Update User Funktionen
     userNewPW: {
       type: UserType,
       args: {
@@ -302,7 +340,7 @@ const Mutation = new GraphQLObjectType({
         authToken: {type: new GraphQLNonNull(GraphQLString) },
       },
       resolve(parent, args){
-      return User.update({ authToken: args.authToken }, { active: true, loggedIn: true });
+      return User.updateOne({ authToken: args.authToken }, { active: true, loggedIn: true });
       }
     },
     signinUser: {
@@ -316,9 +354,19 @@ const Mutation = new GraphQLObjectType({
           email: args.email,
           password: args.password
          });
-
       }
-    }
+    },
+    //Update Tracker Funktionen
+    updateTracker: {
+      type: TrackerType,
+      args: {
+        id: {type: GraphQLID },
+        lastSync: {type: GraphQLString },
+      },
+      resolve(parent, args){
+        return Tracker.updateOne({ _id: args.id }, { lastSync: args.lastSync });
+      }
+    },
   }
 })
 
