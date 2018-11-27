@@ -338,9 +338,11 @@ const Mutation = new GraphQLObjectType({
       type: UserType,
       args: {
         authToken: {type: new GraphQLNonNull(GraphQLString) },
+        lastLogin: {type: GraphQLString },
+        updatedAt: {type: GraphQLString },
       },
       resolve(parent, args){
-      return User.updateOne({ authToken: args.authToken }, { active: true, loggedIn: true });
+      return User.updateOne({ authToken: args.authToken }, { active: true, loggedIn: true, lastLogin: args.lastLogin, updatedAt: args.updatedAt });
       }
     },
     signinUser: {
