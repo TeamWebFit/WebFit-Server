@@ -8,7 +8,7 @@ const userSchema = new Schema ({
   firstName: String,
   name: String,
   authToken: String,
-  dateOfBirth: Date,
+  dateOfBirth: String,
   gender: Number,
   active: Boolean,// @defaultValue(value: false)
   userGroup: Number,
