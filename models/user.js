@@ -20,7 +20,8 @@ const userSchema = new Schema ({
   weightId: String,
   email: String,
   password: String,
-  loggedIn: Boolean
+  loggedIn: Boolean,
+  guest: Boolean
 });
 
 module.exports = mongoose.model('User', userSchema);

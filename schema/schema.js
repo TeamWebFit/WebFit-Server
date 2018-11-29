@@ -74,7 +74,8 @@ const UserType = new GraphQLObjectType({
       }},
       email: {type: GraphQLString }, //@isUnique
       password: {type: GraphQLString },
-      loggedIn: {type: GraphQLBoolean }
+      loggedIn: {type: GraphQLBoolean },
+      guest: {type: GraphQLBoolean }
   })
 })
 
@@ -85,6 +86,7 @@ const TrackerModelType = new GraphQLObjectType({
       id: {type: GraphQLID },
       manufacturer: {type: GraphQLString },
       type: {type: GraphQLString },
+      authLink: {type: GraphQLString },
       apiLink: {type: GraphQLString },
       apiLinkRequest: {type: GraphQLString },
       trackers: {
@@ -209,6 +211,13 @@ const RootQuery = new GraphQLObjectType({
       return Tracker.find({});
       }
     },
+    allTrackerModels: {
+      type: new GraphQLList(TrackerModelType),
+      resolve(parent, args){
+      //  return trackers
+      return TrackerModel.find({});
+      }
+    },
   }
 })
 
@@ -255,9 +264,42 @@ const Mutation = new GraphQLObjectType({
           //weightId: args.weightId,
           email: args.email,
           password: args.password,
-          loggedIn: false
+          loggedIn: false,
+          guest: false
         });
         return user.save();
+      }
+    },
+    createGuestUser: {
+      type: UserType,
+      args: {
+        firstName: {type: new GraphQLNonNull(GraphQLString) },
+        dateOfBirth: {type: GraphQLString },
+        gender: {type: GraphQLInt },
+        height: {type: GraphQLFloat },
+        trackerIds: {type: GraphQLID },
+        weightId: {type: GraphQLID }
+      },
+      resolve(parent, args){
+        let user = new User({
+          createdAt: dateString,
+          updatedAt: dateString,
+          userGroup: 1,
+          //height: args.height,
+          trackerIds: args.trackerIds,
+          //weightId: args.weightId,
+          guest: true
+        });
+        return user.save();
+      }
+    },
+    deleteUser: {
+      type: UserType,
+      args: {
+        id: {type: GraphQLID }
+      },
+      resolve(parent, args){
+        return User.deleteOne({ _id: args.id });
       }
     },
     createTrackerModel: {
@@ -265,6 +307,7 @@ const Mutation = new GraphQLObjectType({
       args: {
         manufacturer: {type: GraphQLString },
         type: {type: GraphQLString },
+        authLink: {type: GraphQLString },
         apiLink: {type: GraphQLString },
         apiLinkRequest: {type: GraphQLString },
         trackerIds: {type: GraphQLString }
@@ -273,6 +316,7 @@ const Mutation = new GraphQLObjectType({
         let trackerModel = new TrackerModel({
           manufacturer: args.manufacturer,
           type: args.type,
+          authLink: args.authLink,
           apiLink: args.apiLink,
           apiLinkRequest: args.apiLinkRequest,
           trackerIds: args.trackerIds
