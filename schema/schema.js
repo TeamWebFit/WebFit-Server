@@ -302,6 +302,15 @@ const Mutation = new GraphQLObjectType({
         return User.deleteOne({ _id: args.id });
       }
     },
+    deleteTracker: {
+      type: TrackerType,
+      args: {
+        id: {type: GraphQLID }
+      },
+      resolve(parent, args){
+        return Tracker.deleteOne({ _id: args.id });
+      }
+    },
     createTrackerModel: {
       type: TrackerModelType,
       args: {
