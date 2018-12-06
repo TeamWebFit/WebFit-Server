@@ -150,13 +150,14 @@ const StepsType = new GraphQLObjectType({
   fields: () => ({
       time: {type: GraphQLString},
       value: {type: GraphQLString },
-      trackers: {
+      trackerId: {type: GraphQLID },
+      /*{
         type: new GraphQLList(TrackerType),
         resolve(parent, args){
         //  return _.filter(users, {weightId: parent.id})
         return User.find({ stepsId: parent.id });
         }//grabbing data
-      },
+      }*/
       //updatedAt: DateTime!
   })
 })
@@ -214,8 +215,15 @@ const RootQuery = new GraphQLObjectType({
     allTrackerModels: {
       type: new GraphQLList(TrackerModelType),
       resolve(parent, args){
-      //  return trackers
+      //  return trackerModels
       return TrackerModel.find({});
+      }
+    },
+    allSteps: {
+      type: new GraphQLList(StepsType),
+      resolve(parent, args){
+      //  return steps
+      return Steps.find({});
       }
     },
   }
@@ -376,6 +384,18 @@ const Mutation = new GraphQLObjectType({
       }
     },
     //Update User Funktionen
+    updateUser: {
+      type: UserType,
+      args: {
+        id: {type: GraphQLID },
+        trackerId: {type: GraphQLID },
+        firstName: {type: new GraphQLNonNull(GraphQLString) },
+        name: {type: new GraphQLNonNull(GraphQLString) },
+      },
+      resolve(parent, args){
+      return User.update({ _id: args.id }, { trackerId: args.trackerId, firstName: args.firstName, name: args.name });
+      }
+    },
     userNewPW: {
       type: UserType,
       args: {
