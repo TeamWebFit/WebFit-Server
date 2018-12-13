@@ -103,19 +103,18 @@ const TrackerModelType = new GraphQLObjectType({
 const TrackerType = new GraphQLObjectType({
   name: 'Tracker',
   fields: () => ({
-      //createdAt: DateTime!
       id: {type: GraphQLID },
       createdAt: {type: GraphQLString },
       trackerModel: {
         type: TrackerModelType,
         resolve(parent, args){
-        //  return _.filter(trackers, {userId: parent.id})
+
         return TrackerModel.findOne({ trackerIds: parent.id });
       }},
       user: {
         type: UserType,
         resolve(parent, args){
-        //  return _.filter(trackers, {userId: parent.id})
+
         return User.findOne({ trackerIds: parent.id });
       }},
       access_token: {type: GraphQLString },
@@ -327,7 +326,7 @@ const Mutation = new GraphQLObjectType({
         authLink: {type: GraphQLString },
         apiLink: {type: GraphQLString },
         apiLinkRequest: {type: GraphQLString },
-        trackerIds: {type: GraphQLString }
+        trackerIds: {type: GraphQLString },
       },
       resolve(parent, args){
         let trackerModel = new TrackerModel({
@@ -364,8 +363,12 @@ const Mutation = new GraphQLObjectType({
           user_id: args.user_id,
           lastSync: milliSec
         });
-        return tracker.save();
-      }
+        console.log(tracker._id);
+        tracker.save();
+        TrackerModel.updateOne({ _id: args.trackerModelID }, { $push: { trackerIds: tracker._id } });
+        return User.updateOne({ _id: args.userId }, { $push: { trackerIds: tracker._id } });
+        //User.updateOne({ _id: args.userId }, { $push: { trackerIds: tracker._id } });
+      },
     },
     createSteps: {
       type: StepsType,
@@ -388,12 +391,10 @@ const Mutation = new GraphQLObjectType({
       type: UserType,
       args: {
         id: {type: GraphQLID },
-        trackerId: {type: GraphQLID },
-        firstName: {type: new GraphQLNonNull(GraphQLString) },
-        name: {type: new GraphQLNonNull(GraphQLString) },
+        trackerId: {type: GraphQLString }
       },
       resolve(parent, args){
-      return User.update({ _id: args.id }, { trackerId: args.trackerId, firstName: args.firstName, name: args.name });
+      return User.updateOne({ _id: args.id }, { $push: { trackerIds: args.trackerId } });
       }
     },
     userNewPW: {
