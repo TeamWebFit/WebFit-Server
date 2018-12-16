@@ -365,8 +365,11 @@ const Mutation = new GraphQLObjectType({
         });
         console.log(tracker._id);
         tracker.save();
-        TrackerModel.updateOne({ _id: args.trackerModelID }, { $push: { trackerIds: tracker._id } });
-        return User.updateOne({ _id: args.userId }, { $push: { trackerIds: tracker._id } });
+
+        return User.updateOne({ _id: args.userId }, { $push: { trackerIds: tracker._id } }).then(() =>{
+          return TrackerModel.updateOne({ _id: args.trackerModelID }, { $push: { trackerIds: tracker._id } });
+          }
+        )
         //User.updateOne({ _id: args.userId }, { $push: { trackerIds: tracker._id } });
       },
     },
