@@ -426,12 +426,13 @@ const Mutation = new GraphQLObjectType({
       type: UserType,
       args: {
         email: {type: new GraphQLNonNull(GraphQLString) },
-        password: {type: new GraphQLNonNull(GraphQLString) }
+        password: {type: new GraphQLNonNull(GraphQLString) },
       },
       resolve(parent, args){
         return User.findOne({
           email: args.email,
-          password: args.password
+          password: args.password,
+          active: true
          });
       }
     },
