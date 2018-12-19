@@ -322,6 +322,8 @@ const Mutation = new GraphQLObjectType({
             return User.updateOne({ _id: result.userId }, { $pull: { trackerIds: result.id } })
           }).then(() => {
             return TrackerModel.updateOne({ _id: result.trackerModelID }, { $pull: { trackerIds: result.id } });
+          }).then(() => {
+            return Steps.deleteMany({ trackerId: result.id });
           })
         });
       }
