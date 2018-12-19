@@ -311,11 +311,19 @@ const Mutation = new GraphQLObjectType({
     },
     deleteTracker: {
       type: TrackerType,
-      args: {
-        id: {type: GraphQLID }
-      },
+      args: { id: {type: GraphQLID }},
       resolve(parent, args){
-        return Tracker.deleteOne({ _id: args.id });
+        return Tracker.findById(args.id, function(err, result) {
+          if (err) throw err;
+          console.log(result.trackerModelID);
+          return Tracker.deleteOne({
+            _id: args.id
+          }).then(() => {
+            return User.updateOne({ _id: result.userId }, { $pull: { trackerIds: result.id } })
+          }).then(() => {
+            return TrackerModel.updateOne({ _id: result.trackerModelID }, { $pull: { trackerIds: result.id } });
+          })
+        });
       }
     },
     createTrackerModel: {
