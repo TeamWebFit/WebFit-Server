@@ -233,7 +233,7 @@ app.get('/sync', (req, res) => {
                       // Sync ist erlaubt
                       // hier folgt der Warehouse Request
 
-                      var api_request_link = apiLink+apiLinkRequest
+                      var api_request_link = apiLink+wearhouse_userid+apiLinkRequest
 
                       axios.get(
 
