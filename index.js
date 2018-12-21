@@ -214,10 +214,9 @@ app.get('/sync', (req, res) => {
                 var dbuser = data['data'].tracker.user.id // WebFit UserID
                 var token = data['data'].tracker.access_token // Bearer Token
                 var token_type = data['data'].tracker.token_type // Bearer Token
-                var sync_date = data['data'].tracker.lastSync // time in ms
+                var lastSync = data['data'].tracker.lastSync // time in ms
                 var apiLink = data['data'].tracker.trackerModel.apiLink // e.g. api.fitbit.com
                 var apiLinkRequest = data['data'].tracker.trackerModel.apiLinkRequest // e.g. api.fitbit.com
-                var lastSync = "1342289846954" // DEMO for time in ms
                 if (dbuser === user){
 
                     // Abgleich der TTL
@@ -227,7 +226,8 @@ app.get('/sync', (req, res) => {
                     console.log("-------------")
                     var time_diff = currentdate - lastSync
                     var sync = Math.abs(time_diff)
-
+                    console.log("Sync-Date: "+ lastSync)
+                    console.log("Current-Date: "+ currentdate)
                     if (sync > 300000){
 
                       // Sync ist erlaubt
@@ -246,7 +246,7 @@ app.get('/sync', (req, res) => {
 
                         )
                         .then(function(response){
-                          console.log(response.data);
+                          //console.log(response.data);
                           // Nun die Daten in die Datenbank schreiben
                           var array_steps = response.data["activities-steps"];
                          // var array_steps_length = array_steps.length;
@@ -262,7 +262,11 @@ app.get('/sync', (req, res) => {
                            }
                           }
                            `).then(done => {
-                            console.log(done)
+                            query(`
+                              mutation{
+                                updateTracker(id: "${tracker}", lastSync: "${currentdate}"){id}
+                                 }
+                            `)
                            })
                          })
                          res.send("Success")
