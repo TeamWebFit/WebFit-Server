@@ -412,8 +412,8 @@ const Mutation = new GraphQLObjectType({
     userNewPW: {
       type: UserType,
       args: {
-        email: {type: new GraphQLNonNull(GraphQLString) },
-        password: {type: new GraphQLNonNull(GraphQLString) },
+        email: {type: GraphQLString },
+        password: {type: GraphQLString },
         updatedAt: {type: GraphQLString },
       },
       resolve(parent, args){
@@ -459,7 +459,7 @@ const Mutation = new GraphQLObjectType({
         zipcode: {type: GraphQLString },
       },
       resolve(parent, args){
-      return User.updateOne({ _id: args.id }, 
+      return User.updateOne({ _id: args.id },
         {
             name: args.name,
             firstName: args.firstName,
@@ -469,7 +469,7 @@ const Mutation = new GraphQLObjectType({
             height: args.height,
             country: args.country,
             zipcode: args.zipcode
-        
+
       });
       }
     },
