@@ -47,10 +47,10 @@ const UserType = new GraphQLObjectType({
       gender: {type: GraphQLInt },
       active: {type: GraphQLBoolean },// @defaultValue(value: false)
       userGroup: {type: GraphQLInt },
-      //language: {type: GraphQLString },
-      //country: {type: GraphQLString },
-      //zipcode: {type: GraphQLInt },
-      //height: {type: GraphQLFloat },
+      language: {type: GraphQLString },
+      country: {type: GraphQLString },
+      zipcode: {type: GraphQLInt },
+      height: {type: GraphQLFloat },
       /*weights: {
         type: new GraphQLList(WeightType),
         resolve(parent, args){
@@ -429,6 +429,34 @@ const Mutation = new GraphQLObjectType({
           email: args.email,
           password: args.password
          });
+      }
+    },
+    editUser: {
+      type: UserType,
+      args: {
+        id: {type: GraphQLID },
+        name: {type: GraphQLString },
+        firstName: {type: GraphQLString },
+        email: {type: GraphQLString },
+        gender: {type: GraphQLString },
+        dateOfBirth: {type: GraphQLString },
+        height: {type: GraphQLString },
+        country: {type: GraphQLString },
+        zipcode: {type: GraphQLString },
+      },
+      resolve(parent, args){
+      return User.updateOne({ _id: args.id }, 
+        {
+            name: args.name,
+            firstName: args.firstName,
+            email: args.email,
+            gender: args.gender,
+            dateOfBirth: args.dateOfBirth,
+            height: args.height,
+            country: args.country,
+            zipcode: args.zipcode
+        
+      });
       }
     },
     //Update Tracker Funktionen
