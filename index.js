@@ -32,7 +32,7 @@ app.post('/api/form', (req, res) => {
   console.log(req.body);
   nodemailer.createTestAccount((err, account) => {
     token = req.body.authToken;
-    link = "http://localhost:3000/verify" + "?token=" + token;
+    link = "http://localhost:3000/login" + "?token=" + token;
     console.log("createTestAccount");
     const htmlEmail = `
       <h3>WebFit Registrierung</h3>
@@ -175,5 +175,3 @@ app.get('/sync/fitbit', syncfitbit);
 // Sync all Tracker
 var syncall = require('./trackermanager/syncall');
 app.get('/syncall', syncall);
-
-
