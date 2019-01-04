@@ -49,8 +49,8 @@ app.post('/api/form', (req, res) => {
       port: 465,
       secure: true,
       auth: {
-        user: 'usslingk@gmail.com',
-        pass: 'BaluBarney'
+        user: 'webfit.hfu@gmail.com',
+        pass: 'Webfit4life!$'
       }
     })
 
