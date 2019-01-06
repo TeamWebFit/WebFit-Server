@@ -26,6 +26,7 @@
     "express": "^4.16.4",
     "express-graphql": "^0.6.12",
     "forever": "^0.15.3",
+    "fs": "0.0.1-security",
     "graphql": "^14.0.2",
     "graphql-iso-date": "^3.6.1",
     "lodash": "^4.17.11",
