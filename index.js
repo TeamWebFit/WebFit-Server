@@ -20,9 +20,9 @@ const fs = require('fs');
 const http = require('http');
 const https = require('https');
 
-const privateKey = fs.readFileSync('/ssl/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/ssl/cert.pem', 'utf8');
-const ca = fs.readFileSync('/ssl/chain.pem', 'utf8');
+const privateKey = fs.readFileSync('ssl/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('ssl/cert.pem', 'utf8');
+const ca = fs.readFileSync('ssl/chain.pem', 'utf8');
 
 const credentials = {
 	key: privateKey,
@@ -92,6 +92,10 @@ app.post('/api/form', (req, res) => {
     });
   });
 });
+
+// Starting both http & https servers
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
 
 httpServer.listen(80, () => {
 	console.log('HTTP Server running on port 80');
