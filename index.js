@@ -20,9 +20,9 @@ const fs = require('fs');
 const http = require('http');
 const https = require('https');
 
-const privateKey = fs.readFileSync(' /etc/letsencrypt/live/server.webfit.app/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/server.webfit.app/cert.pem', 'utf8');
-const ca = fs.readFileSync(' /etc/letsencrypt/live/server.webfit.app/chain.pem', 'utf8');
+const privateKey = fs.readFileSync('/ssl/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/ssl/cert.pem', 'utf8');
+const ca = fs.readFileSync('/ssl/chain.pem', 'utf8');
 
 const credentials = {
 	key: privateKey,
