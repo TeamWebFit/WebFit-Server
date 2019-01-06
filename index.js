@@ -1,5 +1,4 @@
 /*Allgemeines*/
-const { ApolloServer, gql } = require('apollo-server');
 const express = require('express');
 var router = express.Router();
 /*GraphQL*/
@@ -14,6 +13,22 @@ const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const app = express();
 var token, link, email;
+
+/* Make some SSL Magic */
+
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/projekt-webfit.de/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/projekt-webfit.de/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/projekt-webfit.de/chain.pem', 'utf8');
+
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
 
 /*Axios*/
 const axios = require('axios');
@@ -78,11 +93,14 @@ app.post('/api/form', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3001
+httpServer.listen(8000, () => {
+	console.log('HTTP Server running on port 8000');
+});
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-})
+httpsServer.listen(4000, () => {
+	console.log('HTTPS Server running on port 4000');
+});
+
 /*End Double-Opt-In & PW vergessen*/
 
 /*Password reset*/
@@ -136,7 +154,8 @@ app.post('/api/resetPassword', (req, res) => {
 /*GraphQL-Server*/
 app.use('/graphql', graphqlHTTP({
   schema,
-  graphiql: true
+  graphiql: true,
+  ssl: true
 }));//is fired whenever a graphql request comes in
 
 app.listen(4000, () => {
@@ -171,6 +190,9 @@ app.get('/sync', syncsingle);
 
 var syncfitbit = require('./trackermanager/sync/fitbit')
 app.get('/sync/fitbit', syncfitbit);
+
+var syncgoogle = require('./trackermanager/sync/google')
+app.get('/sync/google', syncgoogle);
 
 // Sync all Tracker
 var syncall = require('./trackermanager/syncall');

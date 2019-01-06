@@ -76,8 +76,9 @@ router.get('/sync', function (req, res) {
                                 // Fitbit Connector ENDE
 
                                 // Google Fit Connector
-                                  }else if(trackerModel === "google"){
+                                  }else if(trackerModel === "5c12653218ca184f7404523f"){
                                     console.log("Google")
+                                    res.redirect('/sync/google?user=' + user + "&trackerid=" + trackerid);
                                   }
                                   //Google Fit Connector ENDE
                                   
