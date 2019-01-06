@@ -20,9 +20,9 @@ const fs = require('fs');
 const http = require('http');
 const https = require('https');
 
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/projekt-webfit.de/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/projekt-webfit.de/cert.pem', 'utf8');
-const ca = fs.readFileSync('/etc/letsencrypt/live/projekt-webfit.de/chain.pem', 'utf8');
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/server.projekt-webfit.de/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/server.projekt-webfit.de/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/server.projekt-webfit.de/chain.pem', 'utf8');
 
 const credentials = {
 	key: privateKey,
@@ -93,12 +93,12 @@ app.post('/api/form', (req, res) => {
   });
 });
 
-httpServer.listen(8000, () => {
-	console.log('HTTP Server running on port 8000');
+httpServer.listen(80, () => {
+	console.log('HTTP Server running on port 80');
 });
 
-httpsServer.listen(4000, () => {
-	console.log('HTTPS Server running on port 4000');
+httpsServer.listen(443, () => {
+	console.log('HTTPS Server running on port 443');
 });
 
 /*End Double-Opt-In & PW vergessen*/
@@ -158,9 +158,7 @@ app.use('/graphql', graphqlHTTP({
   ssl: true
 }));//is fired whenever a graphql request comes in
 
-app.listen(4000, () => {
-  console.log("GraphQL Server is listening on 4000");
-})
+
 /*End GraphQL Server*/
 
 /*MongoDB*/
@@ -174,10 +172,6 @@ mongoose.connection.once('open', () => {
 /*  This API listen for TrackerID&TrackerTyp&UserID
     to make an HTTP-Request to a wearhouse */
 
-app.listen(4009, () => {
-  console.log("WebFit-API-Server is running on 4009")
-
-})
 
 app.get('/', (req, res) => {
   res.send('WebFit-Server is online')
