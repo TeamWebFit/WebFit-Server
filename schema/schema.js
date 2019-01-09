@@ -31,6 +31,7 @@ const {
 var date = new Date();
 var dateString = date.toString();
 var milliSec = date.getTime();
+var init_sync = "9999"
 
 /*Types*/
 const UserType = new GraphQLObjectType({
@@ -361,7 +362,7 @@ const Mutation = new GraphQLObjectType({
           expires_in: args.expires_in,
           refreshtoken: args.refreshtoken,
           user_id: args.user_id,
-          lastSync: milliSec
+          lastSync: init_sync
         });
         console.log(tracker._id);
         tracker.save();
