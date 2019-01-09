@@ -12,12 +12,9 @@ const userSchema = new Schema ({
   gender: Number,
   active: Boolean,// @defaultValue(value: false)
   userGroup: Number,
-  language: String,
-  country: String,
-  zipcode: Number,
   height: Number,
   trackerIds: [String],
-  weightId: String,
+  weightId: Number,
   email: String,
   password: String,
   loggedIn: Boolean,
