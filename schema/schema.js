@@ -47,28 +47,16 @@ const UserType = new GraphQLObjectType({
       gender: {type: GraphQLInt },
       active: {type: GraphQLBoolean },// @defaultValue(value: false)
       userGroup: {type: GraphQLInt },
-      language: {type: GraphQLString },
-      country: {type: GraphQLString },
-      zipcode: {type: GraphQLInt },
-      height: {type: GraphQLFloat },
-      /*weights: {
+      height: {type: GraphQLInt },
+      weight: {
         type: new GraphQLList(WeightType),
         resolve(parent, args){
-          //return _.filter(weights, {userId: parent.id})
           return Weight.find({ userId: parent.id });
         }
       },
-      trackers: {
-        type: new GraphQLList(TrackerType),
-        resolve(parent, args){
-        //  return _.filter(trackers, {userId: parent.id})
-        return Tracker.find({ userId: parent.id });
-        }//grabbing data
-      },*/
       tracker: {
         type: new GraphQLList(TrackerType),
         resolve(parent, args){
-        //  return _.filter(trackers, {userId: parent.id})
         console.log(parent.id);
         return Tracker.find({ userId: parent.id });
       }},
@@ -129,18 +117,9 @@ const TrackerType = new GraphQLObjectType({
 const WeightType = new GraphQLObjectType({
   name: 'Weight',
   fields: () => ({
-      createdAt: {type: GraphQLString},
-      id: {type: GraphQLID },
-      kilogram: {type: GraphQLFloat },
-
-      users: {
-        type: new GraphQLList(UserType),
-        resolve(parent, args){
-        //  return _.filter(users, {weightId: parent.id})
-        return User.find({ weightId: parent.id });
-        }//grabbing data
-      },
-      //updatedAt: DateTime!
+      date: {type: GraphQLString},
+      value: {type: GraphQLFloat },
+      userId: {type: GraphQLID }
   })
 })
 
@@ -150,13 +129,6 @@ const StepsType = new GraphQLObjectType({
       time: {type: GraphQLString},
       value: {type: GraphQLString },
       trackerId: {type: GraphQLID },
-      /*{
-        type: new GraphQLList(TrackerType),
-        resolve(parent, args){
-        //  return _.filter(users, {weightId: parent.id})
-        return User.find({ stepsId: parent.id });
-        }//grabbing data
-      }*/
       //updatedAt: DateTime!
   })
 })
@@ -264,11 +236,7 @@ const Mutation = new GraphQLObjectType({
           active: false,// @defaultValue(value: false)
           userGroup: 1,
           language: args.language,
-          //country: args.country,
-          //zipcode: args.zipcode,
-          //height: args.height,
           trackerIds: args.trackerIds,
-          //weightId: args.weightId,
           email: args.email,
           password: args.password,
           loggedIn: false,
@@ -292,9 +260,7 @@ const Mutation = new GraphQLObjectType({
           createdAt: dateString,
           updatedAt: dateString,
           userGroup: 1,
-          //height: args.height,
           trackerIds: args.trackerIds,
-          //weightId: args.weightId,
           guest: true
         });
         return user.save();
@@ -451,25 +417,18 @@ const Mutation = new GraphQLObjectType({
         id: {type: GraphQLID },
         name: {type: GraphQLString },
         firstName: {type: GraphQLString },
-        email: {type: GraphQLString },
-        gender: {type: GraphQLString },
+        gender: {type: GraphQLInt },
         dateOfBirth: {type: GraphQLString },
-        height: {type: GraphQLString },
-        country: {type: GraphQLString },
-        zipcode: {type: GraphQLString },
+        height: {type: GraphQLInt },
       },
       resolve(parent, args){
       return User.updateOne({ _id: args.id },
         {
             name: args.name,
             firstName: args.firstName,
-            email: args.email,
             gender: args.gender,
             dateOfBirth: args.dateOfBirth,
-            height: args.height,
-            country: args.country,
-            zipcode: args.zipcode
-
+            height: args.height
       });
       }
     },
