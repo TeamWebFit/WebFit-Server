@@ -97,12 +97,12 @@ app.post('/api/form', (req, res) => {
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
-httpServer.listen(80, () => {
-	console.log('HTTP Server running on port 80');
+httpServer.listen(4000, () => {
+	console.log('HTTP Server running on port 4000');
 });
 
-httpsServer.listen(443, () => {
-	console.log('HTTPS Server running on port 443');
+httpsServer.listen(4009, () => {
+	console.log('HTTPS Server running on port 4009');
 });
 
 /*End Double-Opt-In & PW vergessen*/
@@ -166,7 +166,7 @@ app.use('/graphql', graphqlHTTP({
 /*End GraphQL Server*/
 
 /*MongoDB*/
-mongoose.connect('mongodb://webfitapp:webfit4life@projekt-webfit.de:27017/WebFitDB');
+mongoose.connect('mongodb://webfitapp:webfit4life@server.projekt-webfit.de:27017/WebFitDB');
 mongoose.connection.once('open', () => {
   console.log('connected to database');
 });
