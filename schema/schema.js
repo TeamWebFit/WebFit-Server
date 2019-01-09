@@ -47,24 +47,14 @@ const UserType = new GraphQLObjectType({
       gender: {type: GraphQLInt },
       active: {type: GraphQLBoolean },// @defaultValue(value: false)
       userGroup: {type: GraphQLInt },
-      language: {type: GraphQLString },
-      country: {type: GraphQLString },
-      zipcode: {type: GraphQLInt },
-      height: {type: GraphQLFloat },
+      height: {type: GraphQLInt },
       /*weights: {
         type: new GraphQLList(WeightType),
         resolve(parent, args){
           //return _.filter(weights, {userId: parent.id})
           return Weight.find({ userId: parent.id });
         }
-      },
-      trackers: {
-        type: new GraphQLList(TrackerType),
-        resolve(parent, args){
-        //  return _.filter(trackers, {userId: parent.id})
-        return Tracker.find({ userId: parent.id });
-        }//grabbing data
-      },*/
+      }*/
       tracker: {
         type: new GraphQLList(TrackerType),
         resolve(parent, args){
@@ -451,25 +441,18 @@ const Mutation = new GraphQLObjectType({
         id: {type: GraphQLID },
         name: {type: GraphQLString },
         firstName: {type: GraphQLString },
-        email: {type: GraphQLString },
-        gender: {type: GraphQLString },
+        gender: {type: GraphQLInt },
         dateOfBirth: {type: GraphQLString },
-        height: {type: GraphQLString },
-        country: {type: GraphQLString },
-        zipcode: {type: GraphQLString },
+        height: {type: GraphQLInt },
       },
       resolve(parent, args){
       return User.updateOne({ _id: args.id },
         {
             name: args.name,
             firstName: args.firstName,
-            email: args.email,
             gender: args.gender,
             dateOfBirth: args.dateOfBirth,
             height: args.height,
-            country: args.country,
-            zipcode: args.zipcode
-
       });
       }
     },
