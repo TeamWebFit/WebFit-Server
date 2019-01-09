@@ -35,7 +35,7 @@ router.get('/syncall', function(req, res){
     var alltracker = data.data.allTrackers
     var synctracker = 0;
     alltracker.forEach(element => {
-      var request = "http://projekt-webfit.de:4009/sync?user="+ element.user.id + "&trackerid=" + element.id
+      var request = "https://server.projekt-webfit.de:4009/sync?user="+ element.user.id + "&trackerid=" + element.id
       axios.get(request).then(function(response){
         console.log(element.id + " // " +response.data)
         if (response.data === "Success"){
