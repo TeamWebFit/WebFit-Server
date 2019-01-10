@@ -18,7 +18,8 @@ const userSchema = new Schema ({
   email: String,
   password: String,
   loggedIn: Boolean,
-  guest: Boolean
+  guest: Boolean,
+  profilePic: String,
 });
 
 module.exports = mongoose.model('User', userSchema);
