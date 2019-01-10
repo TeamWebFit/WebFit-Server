@@ -212,7 +212,7 @@ app.use('/public', express.static(__dirname + '/public'))
 
 app.post('/upload', (req, res, next) => {
 	var uploadName = req.files.file.name;
-  let uploadFile = req.files.file
+  let uploadFile = req.files.file;
 
 	var splitString = uploadName.split("_");
 	var userId = splitString[0];
