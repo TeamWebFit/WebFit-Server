@@ -65,7 +65,8 @@ const UserType = new GraphQLObjectType({
       email: {type: GraphQLString }, //@isUnique
       password: {type: GraphQLString },
       loggedIn: {type: GraphQLBoolean },
-      guest: {type: GraphQLBoolean }
+      guest: {type: GraphQLBoolean },
+      profilePic: {type: GraphQLString },
   })
 })
 
@@ -454,6 +455,19 @@ const Mutation = new GraphQLObjectType({
             dateOfBirth: args.dateOfBirth,
             height: args.height,
       });
+      }
+    },
+    uploadProfilePic: {
+      type: UserType,
+      args: {
+        id: {type: GraphQLID },
+        profilePic: {type: GraphQLString },
+      },
+      resolve(parent, args){
+      return User.updateOne({ _id: args.id },
+        {
+            profilePic: args.profilePic,
+        })
       }
     },
     //Update Tracker Funktionen

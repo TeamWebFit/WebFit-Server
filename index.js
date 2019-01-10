@@ -13,7 +13,10 @@ const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const app = express();
 var token, link, email;
-
+/*Upload*/
+const cookieParser = require('cookie-parser')
+const fileUpload = require('express-fileupload')
+/*Upload*/
 /* Make some SSL Magic */
 
 const fs = require('fs');
@@ -195,3 +198,57 @@ app.get('/sync/google', syncgoogle);
 // Sync all Tracker
 var syncall = require('./trackermanager/syncall');
 app.get('/syncall', syncall);
+
+
+//Fileupload profilePic
+app.use(
+  bodyParser.urlencoded({
+    extended: false,
+  }),
+)
+app.use(cookieParser())
+app.use(fileUpload())
+app.use('/public', express.static(__dirname + '/public'))
+
+app.post('/upload', (req, res, next) => {
+	var uploadName = req.files.file.name;
+  let uploadFile = req.files.file
+
+	var splitString = uploadName.split("_");
+	var userId = splitString[0];
+	console.log(userId);
+
+  const fileName = uploadName;
+  uploadFile.mv(
+    `${__dirname}/public/files/${fileName}`,
+    function (err) {
+      if (err) {
+        return res.status(500).send(err)
+      }
+
+      res.json({
+        file: `public/${req.files.file.name}`,
+      })
+    },
+		console.log("imOrdner"),
+  )
+
+		function query(str) {
+      return graphql(schema, str);
+    }
+		console.log(userId);
+		console.log(fileName);
+		query(`
+				 mutation{
+					uploadProfilePic(
+					 id: "${userId}",
+					 profilePic: "${fileName}"
+				 ){
+					 id
+				 }
+				}
+				 `
+			 )
+
+})
+//End Fileupload
