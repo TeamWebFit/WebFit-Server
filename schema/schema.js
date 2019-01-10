@@ -6,6 +6,7 @@ const Tracker = require('../models/tracker');
 const Weight = require('../models/weight');
 const TrackerModel = require('../models/tracker-model');
 const Steps = require('../models/steps');
+const HeartRate = require('../models/heartRate');
 
 const DateTimeScalar = require('../scalars/dateTimeScalar');
 
@@ -121,18 +122,9 @@ const TrackerType = new GraphQLObjectType({
 const WeightType = new GraphQLObjectType({
   name: 'Weight',
   fields: () => ({
-      createdAt: {type: GraphQLString},
-      id: {type: GraphQLID },
-      kilogram: {type: GraphQLFloat },
-
-      users: {
-        type: new GraphQLList(UserType),
-        resolve(parent, args){
-        //  return _.filter(users, {weightId: parent.id})
-        return User.find({ weightId: parent.id });
-        }//grabbing data
-      },
-      //updatedAt: DateTime!
+      time: {type: GraphQLString},
+      value: {type: GraphQLInt },
+      userId: {type: GraphQLID },
   })
 })
 
@@ -142,14 +134,15 @@ const StepsType = new GraphQLObjectType({
       time: {type: GraphQLString},
       value: {type: GraphQLString },
       trackerId: {type: GraphQLID },
-      /*{
-        type: new GraphQLList(TrackerType),
-        resolve(parent, args){
-        //  return _.filter(users, {weightId: parent.id})
-        return User.find({ stepsId: parent.id });
-        }//grabbing data
-      }*/
-      //updatedAt: DateTime!
+  })
+})
+
+const HeartRateType = new GraphQLObjectType({
+  name: 'HeartRate',
+  fields: () => ({
+      time: {type: GraphQLString},
+      value: {type: GraphQLInt },
+      trackerId: {type: GraphQLID },
   })
 })
 
@@ -189,6 +182,30 @@ const RootQuery = new GraphQLObjectType({
       return User.findOne({ email: args.email });
       }
     },
+    steps: {
+      type: new GraphQLList(StepsType),
+      args: { trackerId: {type: GraphQLID }},
+      resolve(parent, args){
+      // return _.find(users, {id: args.id });
+      return Steps.find({ trackerId: args.trackerId });
+      }
+    },
+    weight: {
+      type: new GraphQLList(WeightType),
+      args: { userId: {type: GraphQLID }},
+      resolve(parent, args){
+      // return _.find(users, {id: args.id });
+      return Weight.find({ userId: args.userId });
+      }
+    },
+    heartRate: {
+      type: new GraphQLList(HeartRateType),
+      args: { trackerId: {type: GraphQLID }},
+      resolve(parent, args){
+      // return _.find(users, {id: args.id });
+      return HeartRate.find({ trackerId: args.trackerId });
+      }
+    },
     allUsers: {
       type: new GraphQLList(UserType),
       resolve(parent, args){
@@ -215,6 +232,20 @@ const RootQuery = new GraphQLObjectType({
       resolve(parent, args){
       //  return steps
       return Steps.find({});
+      }
+    },
+    allWeights: {
+      type: new GraphQLList(WeightType),
+      resolve(parent, args){
+      //  return steps
+      return Weight.find({});
+      }
+    },
+    allHearRates: {
+      type: new GraphQLList(HeartRateType),
+      resolve(parent, args){
+      //  return steps
+      return HeartRate.find({});
       }
     },
   }
@@ -388,6 +419,38 @@ const Mutation = new GraphQLObjectType({
           value: args.value,
         });
         return steps.save();
+      }
+    },
+    createWeight: {
+      type: WeightType,
+      args: {
+        userId: {type: GraphQLID },
+        time: {type: GraphQLString },
+        value: {type: GraphQLInt }
+      },
+      resolve(parent, args){
+        let weight = new Weight({
+          userId: args.userId,
+          time: args.time,
+          value: args.value,
+        });
+        return weight.save();
+      }
+    },
+    createHeartRate: {
+      type: HeartRateType,
+      args: {
+        trackerId: {type: GraphQLID },
+        time: {type: GraphQLString },
+        value: {type: GraphQLInt }
+      },
+      resolve(parent, args){
+        let heartRate = new HeartRate({
+          trackerId: args.trackerId,
+          time: args.time,
+          value: args.value,
+        });
+        return heartRate.save();
       }
     },
     //Update User Funktionen

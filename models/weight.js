@@ -3,8 +3,7 @@ const Schema = mongoose.Schema;
 
 const weightSchema = new Schema ({
   userId: String,
-  trackerId: String,
-  time: Date,
+  time: String,
   value: Number
 });
 
