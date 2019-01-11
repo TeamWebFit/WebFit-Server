@@ -52,12 +52,13 @@ router.get('/sync/fitbit', function (req, res) {
     //Tracker-Daten kommen an
     // Nun abgleich mit API-Request Daten
       var tracker = data['data'].tracker.id // WebFit TrackerID
+      var user = data['data'].tracker.user.id
       var wearhouse_userid = data['data'].tracker.user_id // FITBIT API
       var token = data['data'].tracker.access_token // Bearer Token
       var token_type = data['data'].tracker.token_type // Bearer Token
       var apiLink = data['data'].tracker.trackerModel.apiLink // e.g. api.fitbit.com
       var apiLinkRequest = data['data'].tracker.trackerModel.apiLinkRequest // e.g. api.fitbit.com
-    
+
 
 
           // Sync ist erlaubt
@@ -87,7 +88,8 @@ router.get('/sync/fitbit', function (req, res) {
                     createSteps(
                      time: "${element.dateTime}",
                      value: "${element.value}",
-                     trackerId: "${tracker}"
+                     trackerId: "${tracker}",
+                     userId: "${user}"
                    ){
                      time
                    }
@@ -108,7 +110,7 @@ router.get('/sync/fitbit', function (req, res) {
           })
 
 
-     
+
   }
 
   );

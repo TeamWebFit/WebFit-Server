@@ -134,6 +134,7 @@ const StepsType = new GraphQLObjectType({
       time: {type: GraphQLString},
       value: {type: GraphQLString },
       trackerId: {type: GraphQLID },
+      userId: {type: GraphQLID }
   })
 })
 
@@ -143,6 +144,7 @@ const HeartRateType = new GraphQLObjectType({
       time: {type: GraphQLString},
       value: {type: GraphQLInt },
       trackerId: {type: GraphQLID },
+      userId: {type: GraphQLID }
   })
 })
 
@@ -409,12 +411,14 @@ const Mutation = new GraphQLObjectType({
       type: StepsType,
       args: {
         trackerId: {type: GraphQLID },
+        userId: {type: GraphQLID },
         time: {type: GraphQLString },
         value: {type: GraphQLString }
       },
       resolve(parent, args){
         let steps = new Steps({
           trackerId: args.trackerId,
+          userId: args.userId,
           time: args.time,
           value: args.value,
         });
@@ -441,12 +445,14 @@ const Mutation = new GraphQLObjectType({
       type: HeartRateType,
       args: {
         trackerId: {type: GraphQLID },
+        userId: {type: GraphQLID },
         time: {type: GraphQLString },
         value: {type: GraphQLInt }
       },
       resolve(parent, args){
         let heartRate = new HeartRate({
           trackerId: args.trackerId,
+          userId: args.userId,
           time: args.time,
           value: args.value,
         });

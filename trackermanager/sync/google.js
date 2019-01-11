@@ -51,6 +51,7 @@ router.get('/sync/google', function (req, res) {
     //Tracker-Daten kommen an
     // Nun abgleich mit API-Request Daten
       var tracker = data['data'].tracker.id // WebFit TrackerID
+      var user = data['data'].tracker.user.id // WebFit UserID
       // var refresh_token = data['data'].tracker.refresh_token // Refresh token
       var token_type = data['data'].tracker.token_type // Bearer Token
       var apiLink = data['data'].tracker.trackerModel.apiLink // e.g. api.fitbit.com
@@ -59,18 +60,18 @@ router.get('/sync/google', function (req, res) {
             // REQUEST CURRECT ACCESS_TOKEN
             // THROUGH AXIOS REFRESH_TOKEN REQUEST
             var refresh_link = apiLink + "/oauth2/v4/token"
-            
+
             console.log("now refresh token with " + refresh_link)
             axios.post(
                 refresh_link,
                 {
-                   
+
                         client_id : "1008561982846-6omt5dknbiqv124o2h5g5nrgg27l7o7v.apps.googleusercontent.com",
                         client_secret : "qo4YWmhVsTn02kyIQkL-z0a0",
                         refresh_token : "1/2G8LNrq95nIY7adRopmPyLZVDxfTt7ZDTdyNHRBu6dz_Zw7Vfow8KriRb2CTAcDN",
                         grant_type : "refresh_token"
 
-                    
+
                   }
                 )
                 .then(function (response) {
@@ -83,10 +84,10 @@ router.get('/sync/google', function (req, res) {
                     // ==== EIGENTLICHER API REQUEST ==== //
 
                   if (apiLinkRequest === "/fitness/v1/users/me/dataset:aggregate") {
-                    
+
                     var step_request_link = apiLink + apiLinkRequest
                     var currentdate = new Date().getTime()
-                    
+
                     // Check if first sync
                     if (lastsyncdate === "9999"){
                       var starttime = currentdate - 1209600000
@@ -103,7 +104,7 @@ router.get('/sync/google', function (req, res) {
                       "startTimeMillis": starttime,
                       "endTimeMillis": currentdate
                     };
-        
+
                     axios.post(step_request_link, params, {
                       headers: {
                           'content-type': 'application/json',
@@ -114,11 +115,11 @@ router.get('/sync/google', function (req, res) {
                       console.log("======================")
                       // console.log(response.data)
                       var bucket = response.data.bucket
-                      
+
                       bucket.forEach(element => {
                         //console.log(element.dataset[0].point)
                           if (element.dataset[0].point.length === 0){
-                            
+
                           }else{
                             var bucket_with_steps = element.dataset[0].point[0]
                            // console.log(bucket_with_steps)
@@ -132,7 +133,8 @@ router.get('/sync/google', function (req, res) {
                                   createSteps(
                                   time: "${time}",
                                   value: "${steps_counter}",
-                                  trackerId: "${tracker}"
+                                  trackerId: "${tracker}",
+                                  userId: "${user}"
                                 ){
                                   time
                                 }
