@@ -204,7 +204,7 @@ app.get('/syncall', syncall);
 app.use(
   bodyParser.urlencoded({
     extended: false,
-  }),
+  })
 )
 app.use(cookieParser())
 app.use(fileUpload())
