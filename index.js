@@ -227,10 +227,10 @@ app.post('/upload', (req, res, next) => {
       }
 
       res.json({
-        file: `public/${req.files.file.name}`,
+        file: `public/${req.files.file.name}`
       })
     },
-		console.log("imOrdner"),
+		console.log("imOrdner")
   )
 
 		function query(str) {
