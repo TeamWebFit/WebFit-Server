@@ -132,7 +132,7 @@ const StepsType = new GraphQLObjectType({
   name: 'Steps',
   fields: () => ({
       time: {type: GraphQLString},
-      value: {type: GraphQLString },
+      value: {type: GraphQLInt },
       trackerId: {type: GraphQLID },
       userId: {type: GraphQLID }
   })
@@ -184,12 +184,20 @@ const RootQuery = new GraphQLObjectType({
       return User.findOne({ email: args.email });
       }
     },
-    steps: {
+    stepsViaTracker: {
       type: new GraphQLList(StepsType),
       args: { trackerId: {type: GraphQLID }},
       resolve(parent, args){
       // return _.find(users, {id: args.id });
       return Steps.find({ trackerId: args.trackerId });
+      }
+    },
+    stepsViaUser: {
+      type: new GraphQLList(StepsType),
+      args: { userId: {type: GraphQLID }},
+      resolve(parent, args){
+      // return _.find(users, {id: args.id });
+      return Steps.find({ userId: args.userId });
       }
     },
     weight: {
@@ -200,12 +208,20 @@ const RootQuery = new GraphQLObjectType({
       return Weight.find({ userId: args.userId });
       }
     },
-    heartRate: {
+    heartRateViaTracker: {
       type: new GraphQLList(HeartRateType),
       args: { trackerId: {type: GraphQLID }},
       resolve(parent, args){
       // return _.find(users, {id: args.id });
       return HeartRate.find({ trackerId: args.trackerId });
+      }
+    },
+    heartRateViaUser: {
+      type: new GraphQLList(HeartRateType),
+      args: { userId: {type: GraphQLID }},
+      resolve(parent, args){
+      // return _.find(users, {id: args.id });
+      return HeartRate.find({ userId: args.userId });
       }
     },
     allUsers: {
@@ -413,7 +429,7 @@ const Mutation = new GraphQLObjectType({
         trackerId: {type: GraphQLID },
         userId: {type: GraphQLID },
         time: {type: GraphQLString },
-        value: {type: GraphQLString }
+        value: {type: GraphQLInt }
       },
       resolve(parent, args){
         let steps = new Steps({
