@@ -357,7 +357,15 @@ const Mutation = new GraphQLObjectType({
         id: {type: GraphQLID }
       },
       resolve(parent, args){
-        return User.deleteOne({ _id: args.id });
+        return Steps.deleteMany({ userId: args.id }).then(() => {
+          return Weight.deleteMany({ userId: args.id })
+        }).then(() => {
+          return HeartRate.deleteMany({ userId: args.id })
+        }).then(() => {
+          return Tracker.deleteMany({ userId: args.id })
+        }).then(() => {
+          return User.deleteOne({ _id: args.id });
+        })
       }
     },
     deleteTracker: {
