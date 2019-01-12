@@ -450,6 +450,13 @@ const Mutation = new GraphQLObjectType({
         return steps.save();
       }
     },
+    deleteAllSteps: {
+      type: StepsType,
+      args: { userId: {type: GraphQLID }},
+      resolve(parent, args){
+        return Steps.deleteMany({ userId: args.userId });
+      }
+    },
     createWeight: {
       type: WeightType,
       args: {
@@ -464,6 +471,13 @@ const Mutation = new GraphQLObjectType({
           value: args.value,
         });
         return weight.save();
+      }
+    },
+    deleteAllWeight: {
+      type: WeightType,
+      args: { userId: {type: GraphQLID }},
+      resolve(parent, args){
+        return Weight.deleteMany({ userId: args.userId });
       }
     },
     createHeartRate: {
@@ -482,6 +496,13 @@ const Mutation = new GraphQLObjectType({
           value: args.value,
         });
         return heartRate.save();
+      }
+    },
+    deleteAllHeartRates: {
+      type: HeartRateType,
+      args: { userId: {type: GraphQLID }},
+      resolve(parent, args){
+        return HeartRate.deleteMany({ userId: args.userId });
       }
     },
     //Update User Funktionen
