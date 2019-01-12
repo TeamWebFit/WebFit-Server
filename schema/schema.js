@@ -126,7 +126,7 @@ const WeightType = new GraphQLObjectType({
   name: 'Weight',
   fields: () => ({
       time: {type: GraphQLString},
-      value: {type: GraphQLInt },
+      value: {type: GraphQLFloat },
       userId: {type: GraphQLID },
   })
 })
@@ -319,7 +319,8 @@ const Mutation = new GraphQLObjectType({
           email: args.email,
           password: args.password,
           loggedIn: false,
-          guest: false
+          guest: false,
+          profilePic: "5c13635af174fa54e3bc6885_1547199724757_profilePic_dummy.jpg"
         });
         return user.save();
       }
@@ -462,7 +463,7 @@ const Mutation = new GraphQLObjectType({
       args: {
         userId: {type: GraphQLID },
         time: {type: GraphQLString },
-        value: {type: GraphQLInt }
+        value: {type: GraphQLFloat }
       },
       resolve(parent, args){
         let weight = new Weight({
@@ -561,11 +562,18 @@ const Mutation = new GraphQLObjectType({
         gender: {type: GraphQLInt },
         dateOfBirth: {type: GraphQLString },
         height: {type: GraphQLInt },
+        weight: {type: GraphQLFloat },
+        time: {type: GraphQLString},
         allowsteps: {type: GraphQLInt},
         allowheart: {type: GraphQLInt},
-        allowweight: {type: GraphQLInt}
+        allowweight: {type: GraphQLInt},
       },
       resolve(parent, args){
+        let weight = new Weight({
+          userId: args.id,
+          value: args.weight,
+          time: args.time
+        });
       return User.updateOne({ _id: args.id },
         {
             name: args.name,
@@ -576,7 +584,9 @@ const Mutation = new GraphQLObjectType({
             allowsteps: args.allowsteps,
             allowheart: args.allowheart,
             allowweight: args.allowweight
-      });
+      }).then(() => {
+        return weight.save();
+      })
       }
     },
     uploadProfilePic: {
