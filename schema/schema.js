@@ -50,6 +50,9 @@ const UserType = new GraphQLObjectType({
       active: {type: GraphQLBoolean },// @defaultValue(value: false)
       userGroup: {type: GraphQLInt },
       height: {type: GraphQLInt },
+      allowsteps: {type: GraphQLInt},
+      allowheart: {type: GraphQLInt},
+      allowweight: {type: GraphQLInt},
       /*weights: {
         type: new GraphQLList(WeightType),
         resolve(parent, args){
@@ -304,6 +307,9 @@ const Mutation = new GraphQLObjectType({
           gender: args.gender,
           active: false,// @defaultValue(value: false)
           userGroup: 1,
+          allowsteps: 1,
+          allowheart: 1,
+          allowweight: 1,
           language: args.language,
           //country: args.country,
           //zipcode: args.zipcode,
@@ -333,6 +339,9 @@ const Mutation = new GraphQLObjectType({
           createdAt: dateString,
           updatedAt: dateString,
           userGroup: 1,
+          allowsteps: 1,
+          allowheart: 1,
+          allowweight: 1,
           //height: args.height,
           trackerIds: args.trackerIds,
           //weightId: args.weightId,
@@ -531,6 +540,9 @@ const Mutation = new GraphQLObjectType({
         gender: {type: GraphQLInt },
         dateOfBirth: {type: GraphQLString },
         height: {type: GraphQLInt },
+        allowsteps: {type: GraphQLInt},
+        allowheart: {type: GraphQLInt},
+        allowweight: {type: GraphQLInt}
       },
       resolve(parent, args){
       return User.updateOne({ _id: args.id },
@@ -540,6 +552,9 @@ const Mutation = new GraphQLObjectType({
             gender: args.gender,
             dateOfBirth: args.dateOfBirth,
             height: args.height,
+            allowsteps: args.allowsteps,
+            allowheart: args.allowheart,
+            allowweight: args.allowweight
       });
       }
     },

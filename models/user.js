@@ -20,6 +20,9 @@ const userSchema = new Schema ({
   loggedIn: Boolean,
   guest: Boolean,
   profilePic: String,
+  allowsteps: Number,
+  allowheart: Number,
+  allowweight: Number
 });
 
 module.exports = mongoose.model('User', userSchema);
