@@ -68,12 +68,11 @@ router.get('/sync/fitbit', function (req, res) {
       // First SYNC
       console.log("First Sync")
 
-
-
       let now = new Date();
-      var removeValue = -13;
+      var removeValue = -6;
 
       while (removeValue !== 1) {
+        console.log("Sync DAY " + removeValue)
         let dateToSync = date.addDays(now, removeValue)
         let finalSyncDate = date.format(dateToSync, 'YYYY-MM-DD')
 
@@ -81,6 +80,7 @@ router.get('/sync/fitbit', function (req, res) {
 
           //STEPS 
           if (element === "/activities/steps/date/") {
+            console.log("Sync Steps")
             var api_request_link = apiLink + wearhouse_userid + element + finalSyncDate + "/1d/1min.json"
             axios.get(
 
@@ -93,7 +93,7 @@ router.get('/sync/fitbit', function (req, res) {
 
             )
               .then(function (response) {
-                //console.log(response.data);
+                // console.log(response.data);
                 // Nun die Daten in die Datenbank schreiben
                 var array_steps = response.data["activities-steps-intraday"].dataset;
 
@@ -104,10 +104,11 @@ router.get('/sync/fitbit', function (req, res) {
                     var falseDate = finalSyncDate + " " + time
                     var falseDate2 = date.parse(falseDate, 'YYYY-MM-DD HH:mm:ss')
                     var finalDate = falseDate2.getTime();
+                    console.log("Hallo")
                     console.log(finalDate)
                     query(`
                       mutation{
-                       createHeartRate(
+                       createSteps(
                         time: "${finalDate}",
                         value: ${element.value},
                         trackerId: "${tracker}",
@@ -207,7 +208,7 @@ router.get('/sync/fitbit', function (req, res) {
         removeValue++;
 
       }
-      res.send("Success")
+       res.send("Success")
 
 
 
@@ -381,7 +382,7 @@ router.get('/sync/fitbit', function (req, res) {
         removeValue++;
       }
 
-      res.send("Success")
+       res.send("Success")
 
 
     }
