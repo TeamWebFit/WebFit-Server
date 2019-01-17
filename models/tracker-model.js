@@ -7,7 +7,7 @@ const trackerModelSchema = new Schema ({
   type: String,
   authLink: String,
   apiLink: String,
-  apiLinkRequest: String,
+  apiLinkRequest: [String],
   trackerIds: [String],
 });
 
