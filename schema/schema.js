@@ -84,7 +84,7 @@ const TrackerModelType = new GraphQLObjectType({
       type: {type: GraphQLString },
       authLink: {type: GraphQLString },
       apiLink: {type: GraphQLString },
-      apiLinkRequest: {type: GraphQLString },
+      apiLinkRequest: {type: new GraphQLList(GraphQLString)},
       trackers: {
         type: new GraphQLList(TrackerType),
         resolve(parent, args){
