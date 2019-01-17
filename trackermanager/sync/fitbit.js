@@ -176,8 +176,7 @@ router.get('/sync/fitbit', function (req, res) {
                 }
                   `).then(done => {
                     // console.log(done)
-                    var datemiau = new Date();
-                    var currentdate = datemiau.getTime();
+                  
               
                   console.log("Success")
             })
@@ -195,8 +194,10 @@ router.get('/sync/fitbit', function (req, res) {
         } 
 //END IF HEARTRATE
 
-            
+var datemiau = new Date();
+var currentdate = datemiau.getTime();
 
+console.log(currentdate)
   query(`
   mutation{
     updateTracker(id: "${tracker}", lastSync: "${currentdate}"){id}
@@ -204,7 +205,6 @@ router.get('/sync/fitbit', function (req, res) {
 `).then(
   res.send("Success")
 ) 
- // res.send("Success")
 
           })
           
@@ -349,8 +349,7 @@ if (element === "/activities/heart/date/"){
          }
           `).then(done => {
             // console.log(done)
-            var date3 = new Date();
-            var currentdate = date3.getTime();
+            
       
      })
 
@@ -371,12 +370,14 @@ if (element === "/activities/heart/date/"){
 } 
 //END IF Heart
 
+var date3 = new Date();
+            var currentdate = date3.getTime();
           query(`
           mutation{
             updateTracker(id: "${tracker}", lastSync: "${currentdate}"){id}
              }
         `).then(
-          res.send("Success")
+           res.send("Success")
           )
           })
 
