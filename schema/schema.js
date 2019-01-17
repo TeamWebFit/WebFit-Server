@@ -7,6 +7,7 @@ const Weight = require('../models/weight');
 const TrackerModel = require('../models/tracker-model');
 const Steps = require('../models/steps');
 const HeartRate = require('../models/heartRate');
+const Workout = require('../models/workout');
 
 const DateTimeScalar = require('../scalars/dateTimeScalar');
 
@@ -148,6 +149,16 @@ const HeartRateType = new GraphQLObjectType({
       value: {type: GraphQLInt },
       trackerId: {type: GraphQLID },
       userId: {type: GraphQLID }
+  })
+})
+
+const WorkoutType = new GraphQLObjectType({
+  name: 'Workout',
+  fields: () => ({
+      userId: {type: GraphQLID },
+      date: {type: GraphQLString },
+      title: {type: GraphQLString},
+      time: {type: GraphQLString},
   })
 })
 
@@ -320,7 +331,7 @@ const Mutation = new GraphQLObjectType({
           password: args.password,
           loggedIn: false,
           guest: false,
-          profilePic: "5c13635af174fa54e3bc6885_1547199724757_profilePic_dummy.jpg"
+          profilePic: "5c3a79821410f30a6dec7e78_1547730951406_profilePic_dummy_quad.jpg"
         });
         return user.save();
       }
@@ -512,6 +523,24 @@ const Mutation = new GraphQLObjectType({
       args: { userId: {type: GraphQLID }},
       resolve(parent, args){
         return HeartRate.deleteMany({ userId: args.userId });
+      }
+    },
+    createWorkout: {
+      type: WorkoutType,
+      args: {
+        userId: {type: GraphQLID },
+        date: {type: GraphQLString },
+        title: {type: GraphQLString },
+        time: {type: GraphQLString },
+      },
+      resolve(parent, args){
+        let workout = new Workout({
+          userId: args.userId,
+          date: args.date,
+          title: args.title,
+          time: args.time,
+        });
+        return workout.save();
       }
     },
     //Update User Funktionen
