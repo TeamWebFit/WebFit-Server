@@ -14,6 +14,7 @@ const { graphql } = require('graphql');
 const cors = require('cors');
 const axios = require('axios');
 let date = require('date-and-time');
+const sleep = require('@lets/sleep');
 
 // request
 
@@ -72,6 +73,7 @@ router.get('/sync/fitbit', function (req, res) {
       var removeValue = -6;
 
       while (removeValue !== 1) {
+        
         console.log("Sync DAY " + removeValue)
         let dateToSync = date.addDays(now, removeValue)
         let finalSyncDate = date.format(dateToSync, 'YYYY-MM-DD')
@@ -206,6 +208,7 @@ router.get('/sync/fitbit', function (req, res) {
 
 
         removeValue++;
+        sleep(200);
 
       }
        res.send("Success")
@@ -380,6 +383,7 @@ router.get('/sync/fitbit', function (req, res) {
 
 
         removeValue++;
+        sleep(200);
       }
 
        res.send("Success")
