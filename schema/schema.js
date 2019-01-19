@@ -238,6 +238,14 @@ const RootQuery = new GraphQLObjectType({
       return HeartRate.find({ userId: args.userId });
       }
     },
+    workout: {
+      type: new GraphQLList(WorkoutType),
+      args: { userId: {type: GraphQLID }},
+      resolve(parent, args){
+      // return _.find(users, {id: args.id });
+      return Workout.find({ userId: args.userId });
+      }
+    },
     allUsers: {
       type: new GraphQLList(UserType),
       resolve(parent, args){
