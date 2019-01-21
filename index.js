@@ -50,7 +50,7 @@ app.post('/api/form', (req, res) => {
   console.log(req.body);
   nodemailer.createTestAccount((err, account) => {
     token = req.body.authToken;
-    link = "http://localhost:3000/login" + "?token=" + token;
+    link = "https://webfit.app/login" + "?token=" + token;
     console.log("createTestAccount");
     const htmlEmail = `
       <h3>WebFit Registrierung</h3>
@@ -115,7 +115,7 @@ app.post('/api/resetPassword', (req, res) => {
   console.log(req.body);
   nodemailer.createTestAccount((err, account) => {
     email = req.body.email;
-    link = "http://localhost:3000/newPassword" + "?email=" + email;
+    link = "https://webfit.app/newPassword" + "?email=" + email;
     console.log("createTestAccount");
     const htmlEmail = `
       <h3>Neues Passwort für WebFit!</h3>
@@ -128,8 +128,8 @@ app.post('/api/resetPassword', (req, res) => {
       port: 465,
       secure: true,
       auth: {
-        user: 'usslingk@gmail.com',
-        pass: 'BaluBarney'
+        user: 'webfit.hfu@gmail.com',
+        pass: 'Webfit4life'
       }
     })
 
@@ -194,6 +194,9 @@ app.get('/sync/fitbit', syncfitbit);
 
 var syncgoogle = require('./trackermanager/sync/google')
 app.get('/sync/google', syncgoogle);
+
+var syncsamsung = require('./trackermanager/sync/samsung')
+app.get('/sync/samsung', syncsamsung);
 
 // Sync all Tracker
 var syncall = require('./trackermanager/syncall');

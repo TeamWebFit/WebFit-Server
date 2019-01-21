@@ -81,7 +81,10 @@ router.get('/sync', function (req, res) {
                                     res.redirect('/sync/google?user=' + user + "&trackerid=" + trackerid);
                                   }
                                   //Google Fit Connector ENDE
-                                  
+                                  else if (trackerModel === "5c12653448ca1454a7503543"){
+                                    console.log("Samsung Tracker")
+                                    res.redirect('/sync/samsung?user=' + user + "&trackerid=" + trackerid);
+                                  }
                               // Kein gültiges TrackerModell angegeben
                               else{
                                 res.send("Error #6 - TrackerModell setup error")
