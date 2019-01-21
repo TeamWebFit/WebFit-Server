@@ -50,7 +50,7 @@ app.post('/api/form', (req, res) => {
   console.log(req.body);
   nodemailer.createTestAccount((err, account) => {
     token = req.body.authToken;
-    link = "https://webfit.app/login" + "?token=" + token;
+    link = "https://dev.webfit.app/login" + "?token=" + token;
     console.log("createTestAccount");
     const htmlEmail = `
       <h3>WebFit Registrierung</h3>
@@ -115,7 +115,7 @@ app.post('/api/resetPassword', (req, res) => {
   console.log(req.body);
   nodemailer.createTestAccount((err, account) => {
     email = req.body.email;
-    link = "https://webfit.app/newPassword" + "?email=" + email;
+    link = "https://dev.webfit.app/newPassword" + "?email=" + email;
     console.log("createTestAccount");
     const htmlEmail = `
       <h3>Neues Passwort für WebFit!</h3>
